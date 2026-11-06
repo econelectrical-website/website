@@ -1,0 +1,1843 @@
+{
+ "images": {
+  "about-vans": {
+   "src_old": "2026/10/Econ-Electrical-Vans.png",
+   "variants": [
+    {
+     "h": 490,
+     "path": "assets/img/about/about-vans-720.webp",
+     "w": 720
+    },
+    {
+     "h": 816,
+     "path": "assets/img/about/about-vans-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "areas-uk": {
+   "src_old": "2026/06/Econ-Electrical-Areas-We-Cover-2.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/areas-uk-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/areas-uk-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "blog-cctv": {
+   "src_old": "2024/11/CCTV-BLOG-PHOTO.jpeg",
+   "variants": [
+    {
+     "h": 600,
+     "path": "assets/img/blog/blog-cctv-600.webp",
+     "w": 600
+    }
+   ]
+  },
+  "blog-eicr": {
+   "src_old": "2024/09/Econ-Electrical-Electrical-Testing-and-inspection-5.jpg",
+   "variants": [
+    {
+     "h": 1280,
+     "path": "assets/img/blog/blog-eicr-577.webp",
+     "w": 577
+    }
+   ]
+  },
+  "blog-ev-chargers": {
+   "src_old": "2024/09/Econ-Electrical-EV-Chargers-8.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/blog/blog-ev-chargers-720.webp",
+     "w": 720
+    },
+    {
+     "h": 768,
+     "path": "assets/img/blog/blog-ev-chargers-1024.webp",
+     "w": 1024
+    }
+   ]
+  },
+  "blog-led-wakefield": {
+   "src_old": "2025/02/Econ-Electrical-LED-Lighting-Wakefield.jpg",
+   "variants": [
+    {
+     "h": 516,
+     "path": "assets/img/blog/blog-led-wakefield-720.webp",
+     "w": 720
+    },
+    {
+     "h": 904,
+     "path": "assets/img/blog/blog-led-wakefield-1262.webp",
+     "w": 1262
+    }
+   ]
+  },
+  "blog-school-led": {
+   "src_old": "2024/02/responsive-led-lowers-energy-costs-theme.webp",
+   "variants": [
+    {
+     "h": 467,
+     "path": "assets/img/blog/blog-school-led-700.webp",
+     "w": 700
+    }
+   ]
+  },
+  "blog-solar": {
+   "src_old": "2026/03/Solar-Panels.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/blog/blog-solar-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/blog/blog-solar-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "blog-surge": {
+   "src_old": "2026/03/Surge-Protection.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/blog/blog-surge-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/blog/blog-surge-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "blog-thermal": {
+   "src_old": "2026/03/Thermal-Imaging.png",
+   "variants": [
+    {
+     "h": 281,
+     "path": "assets/img/blog/blog-thermal-720.webp",
+     "w": 720
+    },
+    {
+     "h": 401,
+     "path": "assets/img/blog/blog-thermal-1026.webp",
+     "w": 1026
+    }
+   ]
+  },
+  "blog-three-phase": {
+   "src_old": "2026/03/3-Phase-Upgrade.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/blog/blog-three-phase-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/blog/blog-three-phase-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "bm-packaging-1": {
+   "src_old": "2024/09/Econ-Electrical-Factory-Lighting-1.png",
+   "variants": [
+    {
+     "h": 696,
+     "path": "assets/img/projects/bm-packaging/packaging-1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1393,
+     "path": "assets/img/projects/bm-packaging/packaging-1-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "bm-packaging-2": {
+   "src_old": "2024/09/Econ-Electrical-Factory-Lighting-2.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/bm-packaging/packaging-2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/bm-packaging/packaging-2-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "bm-packaging-3": {
+   "src_old": "2024/09/Econ-Electrical-Factory-Lighting-3.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/bm-packaging/packaging-3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/bm-packaging/packaging-3-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "busdepot-1": {
+   "src_old": "d736aae8-image.png",
+   "variants": [
+    {
+     "h": 558,
+     "path": "assets/img/projects/busdepot/1-726.webp",
+     "w": 726
+    }
+   ]
+  },
+  "busdepot-2": {
+   "src_old": "7116dfe3-image.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/busdepot/2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/busdepot/2-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "busdepot-3": {
+   "src_old": "aab67c83-image.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/busdepot/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/busdepot/3-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "busdepot-4": {
+   "src_old": "20250708_113258.jpg",
+   "variants": [
+    {
+     "h": 1280,
+     "path": "assets/img/projects/busdepot/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 2560,
+     "path": "assets/img/projects/busdepot/4-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "busdepot-5": {
+   "src_old": "20250708_113405.jpg",
+   "variants": [
+    {
+     "h": 1280,
+     "path": "assets/img/projects/busdepot/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 2560,
+     "path": "assets/img/projects/busdepot/5-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "busdepot-6": {
+   "src_old": "DJI_20250708135611_0289_D__1_.JPG",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/busdepot/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/busdepot/6-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "busdepot-7": {
+   "src_old": "89e7bd7e-image.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/busdepot/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/busdepot/7-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "busdepot-8": {
+   "src_old": "b652e940-image.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/busdepot/8-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/busdepot/8-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "card-cummins": {
+   "src_old": "2026/08/Cummins-Turbo-Technologies.png",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/card-cummins-720.webp",
+     "w": 720
+    },
+    {
+     "h": 810,
+     "path": "assets/img/projects/card-cummins-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "card-saint": {
+   "src_old": "2026/08/Saint-Flooring-Group.png",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/card-saint-720.webp",
+     "w": 720
+    },
+    {
+     "h": 810,
+     "path": "assets/img/projects/card-saint-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "card-swan": {
+   "src_old": "2026/08/Swan-Civil-Engineering.png",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/card-swan-720.webp",
+     "w": 720
+    },
+    {
+     "h": 810,
+     "path": "assets/img/projects/card-swan-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "compliance-emergency": {
+   "src_old": "2026/06/Econ-Electrical-Emergency-Lighting.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/compliance-emergency-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/compliance-emergency-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "compliance-hero": {
+   "src_old": "2026/06/Econ-Electrical-Compliance.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/compliance-hero-960.webp",
+     "w": 960
+    },
+    {
+     "h": 887,
+     "path": "assets/img/services/compliance-hero-1774.webp",
+     "w": 1774
+    }
+   ]
+  },
+  "compliance-pat": {
+   "src_old": "2026/06/Econ-Electrical-PAT-Testing.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/compliance-pat-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/compliance-pat-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "compliance-testing": {
+   "src_old": "2026/06/Econ-Electrical-Electrical-Testing.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/compliance-testing-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/compliance-testing-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "compliance-thermal": {
+   "src_old": "2026/06/Econ-Electrical-Thermal-Imagin.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/compliance-thermal-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/compliance-thermal-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-1": {
+   "src_old": "2024/09/Econ-Electrical-Cummins-Project-1.jpg",
+   "variants": [
+    {
+     "h": 324,
+     "path": "assets/img/projects/cummins/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 648,
+     "path": "assets/img/projects/cummins/1-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-2": {
+   "src_old": "2024/09/Econ-Electrical-Cummins-Project-7.jpg",
+   "variants": [
+    {
+     "h": 600,
+     "path": "assets/img/projects/cummins/2-480.webp",
+     "w": 480
+    }
+   ]
+  },
+  "cummins-3": {
+   "src_old": "2024/09/Econ-Electrical-Cummins-Project-2.jpg",
+   "variants": [
+    {
+     "h": 324,
+     "path": "assets/img/projects/cummins/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 648,
+     "path": "assets/img/projects/cummins/3-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-4": {
+   "src_old": "2024/09/Econ-Electrical-Cummins-Project-4.jpg",
+   "variants": [
+    {
+     "h": 900,
+     "path": "assets/img/projects/cummins/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1800,
+     "path": "assets/img/projects/cummins/4-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-5": {
+   "src_old": "2024/09/Econ-Electrical-Cummins-Project-5.jpg",
+   "variants": [
+    {
+     "h": 900,
+     "path": "assets/img/projects/cummins/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1800,
+     "path": "assets/img/projects/cummins/5-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-6": {
+   "src_old": "2024/09/Econ-Electrical-Cummins-Project-6.jpg",
+   "variants": [
+    {
+     "h": 900,
+     "path": "assets/img/projects/cummins/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1799,
+     "path": "assets/img/projects/cummins/6-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-7": {
+   "src_old": "20241227_115128.jpg",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/cummins/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 811,
+     "path": "assets/img/projects/cummins/7-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-8": {
+   "src_old": "20241228_094138.jpg",
+   "variants": [
+    {
+     "h": 1279,
+     "path": "assets/img/projects/cummins/8-720.webp",
+     "w": 720
+    },
+    {
+     "h": 2558,
+     "path": "assets/img/projects/cummins/8-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "cummins-9": {
+   "src_old": "20241228_111819.jpg",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/cummins/9-720.webp",
+     "w": 720
+    },
+    {
+     "h": 811,
+     "path": "assets/img/projects/cummins/9-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "dcreading-1": {
+   "src_old": "f10.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/1-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-2": {
+   "src_old": "f3.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/2-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-3": {
+   "src_old": "f1.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/3-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-4": {
+   "src_old": "f5.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/4-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-5": {
+   "src_old": "f6.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/5-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-6": {
+   "src_old": "f7.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/6-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-7": {
+   "src_old": "f2.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/7-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-8": {
+   "src_old": "f4.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/8-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/8-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "dcreading-9": {
+   "src_old": "f8.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/dcreading/9-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/dcreading/9-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-1": {
+   "src_old": "D6.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/1-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-2": {
+   "src_old": "d15.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/2-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-3": {
+   "src_old": "WhatsApp Image 2026-11-04 at 11.27.21.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/3-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-4": {
+   "src_old": "D4.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/4-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-5": {
+   "src_old": "D10.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/5-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-6": {
+   "src_old": "D11.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/6-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-7": {
+   "src_old": "D13.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/7-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-8": {
+   "src_old": "D14.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/8-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/8-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "devitechdcac-9": {
+   "src_old": "d12.jpeg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/devitechdcac/9-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/devitechdcac/9-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "ev-council-5": {
+   "src_old": "2024/09/Econ-Electrical-EV-Local-Council-1.jpg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/ev-council/council-5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/ev-council/council-5-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "highbaynotts-1": {
+   "src_old": "DJI_20241024145423_0099_D.JPG",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/highbaynotts/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/highbaynotts/1-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "highbaynotts-2": {
+   "src_old": "DJI_20241021134335_0078_D.JPG",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/highbaynotts/2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/highbaynotts/2-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "highbaynotts-3": {
+   "src_old": "DJI_20241021134348_0079_D.JPG",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/highbaynotts/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/highbaynotts/3-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "highbaynotts-4": {
+   "src_old": "DJI_20241021134317_0077_D (2).JPG",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/highbaynotts/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/highbaynotts/4-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "highbaynotts-5": {
+   "src_old": "DJI_20241024145438_0100_D.JPG",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/highbaynotts/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/highbaynotts/5-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "home-about-site": {
+   "src_old": "2026/06/Econ-Electrical-About-Us-scaled.jpg",
+   "variants": [
+    {
+     "h": 720,
+     "path": "assets/img/home/home-about-site-960.webp",
+     "w": 960
+    },
+    {
+     "h": 1440,
+     "path": "assets/img/home/home-about-site-1920.webp",
+     "w": 1920
+    }
+   ]
+  },
+  "home-cta-warehouse": {
+   "src_old": "2026/06/Econ-Electrical-Turnkey-Electrical-Solutions.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/home/home-cta-warehouse-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/home/home-cta-warehouse-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "home-energy-art": {
+   "src_old": "illustration.py",
+   "variants": [
+    {
+     "h": 526,
+     "path": "assets/img/residential/home-energy-art-960.webp",
+     "w": 960
+    },
+    {
+     "h": 1052,
+     "path": "assets/img/residential/home-energy-art-1920.webp",
+     "w": 1920
+    }
+   ]
+  },
+  "home-energy-og": {
+   "src_old": "illustration.py",
+   "variants": [
+    {
+     "h": 630,
+     "path": "assets/img/residential/home-energy-og.jpg",
+     "w": 1200
+    }
+   ]
+  },
+  "installation-hero": {
+   "src_old": "2026/06/Econ-Electrical-Electrical-Installation.png",
+   "variants": [
+    {
+     "h": 504,
+     "path": "assets/img/services/installation-hero-960.webp",
+     "w": 960
+    },
+    {
+     "h": 909,
+     "path": "assets/img/services/installation-hero-1731.webp",
+     "w": 1731
+    }
+   ]
+  },
+  "installation-ppm": {
+   "src_old": "2026/06/Econ-Electrical-PPM.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/installation-ppm-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/installation-ppm-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "installation-reactive": {
+   "src_old": "2026/06/Econ-Electrical-Reactive-Maintenance.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/installation-reactive-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/installation-reactive-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "installation-subcontract": {
+   "src_old": "2026/06/Econ-Electrical-Sub-Contract-Partnership.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/installation-subcontract-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/installation-subcontract-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "installation-turnkey": {
+   "src_old": "2026/06/Econ-Electrical-Turnkey-Electrical-Solutions.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/installation-turnkey-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/installation-turnkey-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "logo-mcs": {
+   "src_old": "2026/09/MCS-White.png",
+   "variants": [
+    {
+     "h": 240,
+     "path": "assets/img/logos/logo-mcs.png",
+     "w": 555
+    }
+   ]
+  },
+  "logo-niceic": {
+   "src_old": "2026/09/NIC-LOGO-White-.png",
+   "variants": [
+    {
+     "h": 240,
+     "path": "assets/img/logos/logo-niceic.png",
+     "w": 421
+    }
+   ]
+  },
+  "logo-safecontractor": {
+   "src_old": "2026/09/Safe-Contractor-White.png",
+   "variants": [
+    {
+     "h": 240,
+     "path": "assets/img/logos/logo-safecontractor.png",
+     "w": 267
+    }
+   ]
+  },
+  "logo-schneider": {
+   "src_old": "2026/09/Econ-Electrical-Schneider-Logo-White.png",
+   "variants": [
+    {
+     "h": 228,
+     "path": "assets/img/logos/logo-schneider.png",
+     "w": 640
+    }
+   ]
+  },
+  "logo-solax": {
+   "src_old": "2026/09/Econ-Electrical-Solax-Power_white.png",
+   "variants": [
+    {
+     "h": 221,
+     "path": "assets/img/logos/logo-solax.png",
+     "w": 640
+    }
+   ]
+  },
+  "renewables-battery": {
+   "src_old": "2026/06/Econ-Electrical-Energy-Storage.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/renewables-battery-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/renewables-battery-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "renewables-ev": {
+   "src_old": "2026/06/Econ-Electrical-EV-Charger-Installation.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/renewables-ev-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/renewables-ev-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "renewables-hero": {
+   "src_old": "2026/06/Econ-Electrical-Renewables.png",
+   "variants": [
+    {
+     "h": 511,
+     "path": "assets/img/services/renewables-hero-960.webp",
+     "w": 960
+    },
+    {
+     "h": 915,
+     "path": "assets/img/services/renewables-hero-1718.webp",
+     "w": 1718
+    }
+   ]
+  },
+  "renewables-solar": {
+   "src_old": "2026/06/Econ-Electrical-Solar-PV-Installation.png",
+   "variants": [
+    {
+     "h": 480,
+     "path": "assets/img/services/renewables-solar-720.webp",
+     "w": 720
+    },
+    {
+     "h": 960,
+     "path": "assets/img/services/renewables-solar-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "saint-1": {
+   "src_old": "2024/09/Econ-Electrical-Saint-Group-Flooring-4.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/saint/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1707,
+     "path": "assets/img/projects/saint/1-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "saint-2": {
+   "src_old": "2024/09/Econ-Electrical-Saint-Group-Flooring-6.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/saint/2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1707,
+     "path": "assets/img/projects/saint/2-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "saint-3": {
+   "src_old": "2024/09/Econ-Electrical-Saint-Group-Flooring-1.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/saint/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1707,
+     "path": "assets/img/projects/saint/3-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "saint-4": {
+   "src_old": "2024/09/Econ-Electrical-Saint-Group-Flooring-8.jpg",
+   "variants": [
+    {
+     "h": 406,
+     "path": "assets/img/projects/saint/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 812,
+     "path": "assets/img/projects/saint/4-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "saint-5": {
+   "src_old": "2024/09/Econ-Electrical-Saint-Group-Flooring-5.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/saint/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1707,
+     "path": "assets/img/projects/saint/5-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "saint-6": {
+   "src_old": "2024/09/Econ-Electrical-Saint-Group-Flooring-3.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/saint/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1707,
+     "path": "assets/img/projects/saint/6-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "saint-7": {
+   "src_old": "2024/09/Econ-Electrical-Saint-Group-Flooring-2.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/saint/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1707,
+     "path": "assets/img/projects/saint/7-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "scotdepot-1": {
+   "src_old": "20250717_095341.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/scotdepot/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/scotdepot/1-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "scotdepot-10": {
+   "src_old": "PHOTO-2025-10-31-10-40-29.jpg",
+   "variants": [
+    {
+     "h": 1600,
+     "path": "assets/img/projects/scotdepot/10-864.webp",
+     "w": 864
+    }
+   ]
+  },
+  "scotdepot-2": {
+   "src_old": "20250715_152640.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/scotdepot/2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/scotdepot/2-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "scotdepot-3": {
+   "src_old": "20250717_095345.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/scotdepot/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/scotdepot/3-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "scotdepot-4": {
+   "src_old": "20250723_093732.jpg",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/scotdepot/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 811,
+     "path": "assets/img/projects/scotdepot/4-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "scotdepot-5": {
+   "src_old": "20250723_093750.jpg",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/scotdepot/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 811,
+     "path": "assets/img/projects/scotdepot/5-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "scotdepot-6": {
+   "src_old": "20250729_130608 (1).jpg",
+   "variants": [
+    {
+     "h": 725,
+     "path": "assets/img/projects/scotdepot/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1451,
+     "path": "assets/img/projects/scotdepot/6-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "scotdepot-7": {
+   "src_old": "20250729_130609.jpg",
+   "variants": [
+    {
+     "h": 725,
+     "path": "assets/img/projects/scotdepot/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1451,
+     "path": "assets/img/projects/scotdepot/7-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "scotdepot-8": {
+   "src_old": "PHOTO-2025-10-31-10-34-05.jpg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/scotdepot/8-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/scotdepot/8-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "scotdepot-9": {
+   "src_old": "PHOTO-2025-10-31-10-40-28.jpg",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/scotdepot/9-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1600,
+     "path": "assets/img/projects/scotdepot/9-1200.webp",
+     "w": 1200
+    }
+   ]
+  },
+  "solarbradford-1": {
+   "src_old": "MAIN SOLAR.jpeg",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/solarbradford/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 810,
+     "path": "assets/img/projects/solarbradford/1-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "solarbradford-2": {
+   "src_old": "Solar1.jpeg",
+   "variants": [
+    {
+     "h": 1600,
+     "path": "assets/img/projects/solarbradford/2-738.webp",
+     "w": 738
+    }
+   ]
+  },
+  "solarbradford-3": {
+   "src_old": "SOLAR.jpeg",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/solarbradford/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 810,
+     "path": "assets/img/projects/solarbradford/3-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "solarbradford-4": {
+   "src_old": "20260729_131036.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/solarbradford/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/solarbradford/4-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "solarbradford-5": {
+   "src_old": "IMG_20260729_124728_10_132_PureShot.jpg",
+   "variants": [
+    {
+     "h": 1280,
+     "path": "assets/img/projects/solarbradford/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 2560,
+     "path": "assets/img/projects/solarbradford/5-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "solarbradford-6": {
+   "src_old": "20260729_125812.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/solarbradford/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/solarbradford/6-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "solarbradford-7": {
+   "src_old": "Solar pic.jpeg",
+   "variants": [
+    {
+     "h": 405,
+     "path": "assets/img/projects/solarbradford/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 810,
+     "path": "assets/img/projects/solarbradford/7-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "solarbradford-8": {
+   "src_old": "20260729_125826.jpg",
+   "variants": [
+    {
+     "h": 540,
+     "path": "assets/img/projects/solarbradford/8-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1080,
+     "path": "assets/img/projects/solarbradford/8-1440.webp",
+     "w": 1440
+    }
+   ]
+  },
+  "swan-1": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-3.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/1-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/1-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-10": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-4.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/10-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/10-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-11": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-2.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/11-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/11-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-2": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-1.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/2-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/2-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-3": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-11.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/3-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/3-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-4": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-10.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/4-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/4-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-5": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-9.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/5-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/5-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-6": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-8.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/6-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/6-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-7": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-7.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/7-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/7-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-8": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-6.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/8-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/8-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "swan-9": {
+   "src_old": "2024/09/Econ-Electrical-Industrial-Unit-Install-5.png",
+   "variants": [
+    {
+     "h": 960,
+     "path": "assets/img/projects/swan/9-720.webp",
+     "w": 720
+    },
+    {
+     "h": 1560,
+     "path": "assets/img/projects/swan/9-1170.webp",
+     "w": 1170
+    }
+   ]
+  },
+  "team-ashley": {
+   "variants": [
+    {
+     "h": 640,
+     "path": "assets/img/team/team-ashley.webp",
+     "w": 640
+    },
+    {
+     "h": 1280,
+     "path": "assets/img/team/team-ashley-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "team-cameron": {
+   "variants": [
+    {
+     "h": 640,
+     "path": "assets/img/team/team-cameron.webp",
+     "w": 640
+    },
+    {
+     "h": 1280,
+     "path": "assets/img/team/team-cameron-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "team-jonathan": {
+   "src_old": "2024/07/Econ-Electrical-Team-Jonathan-e1720947206191.jpeg",
+   "variants": [
+    {
+     "h": 640,
+     "path": "assets/img/team/team-jonathan.webp",
+     "w": 640
+    }
+   ]
+  },
+  "team-matthew": {
+   "variants": [
+    {
+     "h": 640,
+     "path": "assets/img/team/team-matthew.webp",
+     "w": 640
+    }
+   ]
+  },
+  "team-max": {
+   "variants": [
+    {
+     "h": 640,
+     "path": "assets/img/team/team-max.webp",
+     "w": 640
+    },
+    {
+     "h": 1280,
+     "path": "assets/img/team/team-max-1280.webp",
+     "w": 1280
+    }
+   ]
+  },
+  "team-robert": {
+   "variants": [
+    {
+     "h": 640,
+     "path": "assets/img/team/team-robert.webp",
+     "w": 640
+    },
+    {
+     "h": 1280,
+     "path": "assets/img/team/team-robert-1280.webp",
+     "w": 1280
+    }
+   ]
+  }
+ },
+ "logo": {
+  "h": 320,
+  "w": 297
+ },
+ "old_paths": {
+  "/wp-content/uploads/2024/02/responsive-led-lowers-energy-costs-theme.webp": "assets/img/blog/blog-school-led-700.webp",
+  "/wp-content/uploads/2024/07/Econ-Electrical-Team-Jonathan-e1720947206191.jpeg": "assets/img/team/team-jonathan.webp",
+  "/wp-content/uploads/2024/07/Econ-Electrical-Team-Robert-e1720947629549.jpeg": "assets/img/team/team-robert.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Ash-e1726748149702.jpg": "assets/img/team/team-ashley.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Cam-e1726748420817.jpg": "assets/img/team/team-cameron.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Cummins-Project-1.jpg": "assets/img/projects/cummins/1-1440.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Cummins-Project-2.jpg": "assets/img/projects/cummins/3-1440.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Cummins-Project-4.jpg": "assets/img/projects/cummins/4-1440.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Cummins-Project-5.jpg": "assets/img/projects/cummins/5-1440.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Cummins-Project-6.jpg": "assets/img/projects/cummins/6-1440.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Cummins-Project-7.jpg": "assets/img/projects/cummins/2-480.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-EV-Chargers-8.jpg": "assets/img/blog/blog-ev-chargers-1024.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-EV-Local-Council-1.jpg": "assets/img/projects/ev-council/council-5-1200.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Electrical-Testing-and-inspection-5.jpg": "assets/img/blog/blog-eicr-577.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Factory-Lighting-1.png": "assets/img/projects/bm-packaging/packaging-1-1440.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Factory-Lighting-2.png": "assets/img/projects/bm-packaging/packaging-2-1200.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Factory-Lighting-3.png": "assets/img/projects/bm-packaging/packaging-3-1200.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-1.png": "assets/img/projects/swan/2-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-10.png": "assets/img/projects/swan/4-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-11.png": "assets/img/projects/swan/3-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-2.png": "assets/img/projects/swan/11-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-3.png": "assets/img/projects/swan/1-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-4.png": "assets/img/projects/swan/10-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-5.png": "assets/img/projects/swan/9-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-6.png": "assets/img/projects/swan/8-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-7.png": "assets/img/projects/swan/7-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-8.png": "assets/img/projects/swan/6-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Industrial-Unit-Install-9.png": "assets/img/projects/swan/5-1170.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Max-e1726748314170.jpg": "assets/img/team/team-max.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Saint-Group-Flooring-1.png": "assets/img/projects/saint/3-1280.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Saint-Group-Flooring-2.png": "assets/img/projects/saint/7-1280.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Saint-Group-Flooring-3.png": "assets/img/projects/saint/6-1280.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Saint-Group-Flooring-4.png": "assets/img/projects/saint/1-1280.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Saint-Group-Flooring-5.png": "assets/img/projects/saint/5-1280.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Saint-Group-Flooring-6.png": "assets/img/projects/saint/2-1280.webp",
+  "/wp-content/uploads/2024/09/Econ-Electrical-Saint-Group-Flooring-8.jpg": "assets/img/projects/saint/4-1440.webp",
+  "/wp-content/uploads/2024/11/CCTV-BLOG-PHOTO.jpeg": "assets/img/blog/blog-cctv-600.webp",
+  "/wp-content/uploads/2024/11/Matt-finan-pic-e1730544215359.jpeg": "assets/img/team/team-matthew.webp",
+  "/wp-content/uploads/2025/02/Econ-Electrical-LED-Lighting-Wakefield.jpg": "assets/img/blog/blog-led-wakefield-1262.webp",
+  "/wp-content/uploads/2026/03/3-Phase-Upgrade.png": "assets/img/blog/blog-three-phase-1440.webp",
+  "/wp-content/uploads/2026/03/Solar-Panels.png": "assets/img/blog/blog-solar-1440.webp",
+  "/wp-content/uploads/2026/03/Surge-Protection.png": "assets/img/blog/blog-surge-1440.webp",
+  "/wp-content/uploads/2026/03/Thermal-Imaging.png": "assets/img/blog/blog-thermal-1026.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-About-Us-scaled.jpg": "assets/img/home/home-about-site-1920.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Areas-We-Cover-2.png": "assets/img/services/areas-uk-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Compliance.png": "assets/img/services/compliance-hero-1774.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-EV-Charger-Installation.png": "assets/img/services/renewables-ev-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Electrical-Installation.png": "assets/img/services/installation-hero-1731.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Electrical-Testing.png": "assets/img/services/compliance-testing-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Emergency-Lighting.png": "assets/img/services/compliance-emergency-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Energy-Storage.png": "assets/img/services/renewables-battery-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-PAT-Testing.png": "assets/img/services/compliance-pat-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-PPM.png": "assets/img/services/installation-ppm-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Reactive-Maintenance.png": "assets/img/services/installation-reactive-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Renewables.png": "assets/img/services/renewables-hero-1718.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Solar-PV-Installation.png": "assets/img/services/renewables-solar-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Sub-Contract-Partnership.png": "assets/img/services/installation-subcontract-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Thermal-Imagin.png": "assets/img/services/compliance-thermal-1440.webp",
+  "/wp-content/uploads/2026/06/Econ-Electrical-Turnkey-Electrical-Solutions.png": "assets/img/services/installation-turnkey-1440.webp",
+  "/wp-content/uploads/2026/08/Cummins-Turbo-Technologies.png": "assets/img/projects/card-cummins-1440.webp",
+  "/wp-content/uploads/2026/08/Saint-Flooring-Group.png": "assets/img/projects/card-saint-1440.webp",
+  "/wp-content/uploads/2026/08/Swan-Civil-Engineering.png": "assets/img/projects/card-swan-1440.webp",
+  "/wp-content/uploads/2026/09/Econ-Electrical-Schneider-Logo-White.png": "assets/img/logos/logo-schneider.png",
+  "/wp-content/uploads/2026/09/Econ-Electrical-Solax-Power_white.png": "assets/img/logos/logo-solax.png",
+  "/wp-content/uploads/2026/09/MCS-White.png": "assets/img/logos/logo-mcs.png",
+  "/wp-content/uploads/2026/09/NIC-LOGO-White-.png": "assets/img/logos/logo-niceic.png",
+  "/wp-content/uploads/2026/09/Safe-Contractor-White.png": "assets/img/logos/logo-safecontractor.png",
+  "/wp-content/uploads/2026/10/Econ-Electrical-Vans.png": "assets/img/about/about-vans-1200.webp"
+ }
+}

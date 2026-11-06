@@ -1,0 +1,7 @@
+# Build output. The finished site is committed at site/, not here.
+build/dist/
+
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
