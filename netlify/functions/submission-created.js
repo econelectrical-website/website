@@ -28,12 +28,9 @@
 const FORMS = {
   "site-assessment": {
     "to": [
-      "robert@econelectrical.co.uk"
+      "jonathan@econelectrical.co.uk"
     ],
-    "cc": [
-      "jonathan@econelectrical.co.uk",
-      "info@econelectrical.co.uk"
-    ],
+    "cc": [],
     "title": "Site Energy Assessment Request",
     "subject": "Site assessment",
     "fields": [
@@ -171,11 +168,9 @@ const FORMS = {
   },
   "contact": {
     "to": [
-      "info@econelectrical.co.uk"
-    ],
-    "cc": [
       "jonathan@econelectrical.co.uk"
     ],
+    "cc": [],
     "title": "Website Enquiry",
     "subject": "Website enquiry",
     "fields": [
@@ -417,9 +412,9 @@ exports.handler = async function (event) {
   const data = payload.data || {};
   const { subject, html, text } = buildEmail(form, data, { created_at: payload.created_at });
 
-  const body = {
-    from: FROM, to: cfg.to, cc: cfg.cc, subject, html, text,
-  };
+  const body = { from: FROM, to: cfg.to, subject, html, text };
+  /* An empty Cc is left off rather than sent as an empty list. */
+  if (cfg.cc && cfg.cc.length) body.cc = cfg.cc;
   /* So that replying goes to the client rather than to a no reply address. */
   if (data.email) body.reply_to = [data.email];
 
