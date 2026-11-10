@@ -1,0 +1,38 @@
+# Netlify reads this file from the root of the repository.
+#
+# The site is pre-built: build/build.py renders it on a laptop and the finished
+# pages are committed to site/, so there is no build command to run here. The
+# only thing Netlify compiles is the function below.
+#
+# A copy of the header rules also lives in site/netlify.toml, written by the
+# build, so that a drag and drop deploy of that folder on its own still gets
+# them. Whichever of the two Netlify reads, the rules are the same.
+
+[build]
+  publish = "site"
+  functions = "netlify/functions"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+
+[[headers]]
+  for = "/assets/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/assets/video/*"
+  [headers.values]
+    # A year, and immutable, which is only safe because these filenames carry a
+    # hash of their contents: a re-encode is published at a different address, so
+    # nobody can be handed a stale copy.
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/assets/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
