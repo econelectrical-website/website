@@ -182,6 +182,34 @@
     update();
   });
 
+  /* Site assessment form.
+     Two jobs. The lease questions only apply to tenants, so they stay out of the way
+     until someone says they lease; they are never required in the HTML, because a
+     required field that is hidden blocks submission with nothing on screen to explain
+     it. And a file input shows no sign of having worked, so the chosen name is echoed
+     back: without it people attach a photo, see nothing happen, and attach it again. */
+  document.querySelectorAll('[data-assess]').forEach(function (form) {
+    var tenure = form.querySelector('[name="tenure"]');
+    var leaseFields = form.querySelectorAll('.lease-only');
+    function syncLease() {
+      var leases = tenure && /lease/i.test(tenure.value);
+      leaseFields.forEach(function (f) { f.hidden = !leases; });
+    }
+    if (tenure) { tenure.addEventListener('change', syncLease); syncLease(); }
+
+    form.querySelectorAll('input[type="file"]').forEach(function (input) {
+      var out = input.closest('.field').querySelector('[data-file-name]');
+      if (!out) return;
+      input.addEventListener('change', function () {
+        var f = input.files && input.files[0];
+        if (!f) { out.hidden = true; return; }
+        var mb = f.size / 1048576;
+        out.textContent = f.name + ' (' + (mb < 0.1 ? '<0.1' : mb.toFixed(1)) + ' MB)';
+        out.hidden = false;
+      });
+    });
+  });
+
   /* Hero video: choose the cut that suits the screen, honour reduced motion and
      data saving, and offer a pause control. */
   var smallScreen = window.matchMedia('(max-width: 760px)').matches;

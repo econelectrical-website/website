@@ -35,8 +35,18 @@ ABOUT_PARAS = [
 ]
 
 HOME = {
-    'title': 'Electrician Wakefield | Electrical Contractors | Econ Electrical',
-    'description': 'Commercial and industrial electrical contractors based in Wakefield, West Yorkshire. Electrical installation, renewables and compliance for businesses across the UK.',
+    # Brand first, as Jonathan wants it. The old title had the brand at the end, and
+    # Google moved it to the front with a colon; putting it at the front ourselves, in the
+    # form Google recommends, leaves it nothing to rearrange. Wakefield appears once:
+    # with it after Contractors as well the title measures 642px against Google's ~600px
+    # cut off, and the end would read "Electricians Wa...". This one is 550px.
+    'title': 'Econ Electrical | Electrical Contractors | Electricians Wakefield',
+    # Starts with the brand because Google swaps in page text that contains the searched
+    # words when the description lacks them: the old one never said "Econ Electrical", so
+    # brand searches showed a line from the About section instead. Carries "electricians"
+    # as well as "electrical contractors" so either search gets its words in bold, and
+    # stays under ~155 characters so it isn't cut off.
+    'description': 'Econ Electrical are NICEIC approved electricians and electrical contractors in Wakefield. Commercial, industrial, solar PV and EV charging across the UK.',
     'eyebrow': 'Experienced. Reliable. Future Focused.',
     'h1': 'Commercial Electrical Contractors &',
     'h1_accent': 'Renewable Energy Specialists',

@@ -17,6 +17,7 @@ import markdown
 from PIL import Image
 
 from illustration import home_energy_svg
+import assessment as ASSESS
 from landing_pages import LANDING, LANDING_ORDER, OFFER_LINKS, PROJECT_SERVICE, RESIDENTIAL
 from site_content import (ABOUT_PARAS, AREAS, CATEGORIES, CTA_DEFAULT, FEATURED_PROJECTS, HOME, POSTS, PRIVACY,
                           PROJECT_ORDER, PROJECTS, RETIRED_POSTS, SERVICE_ORDER, SERVICES, SITE, TEAM)
@@ -67,7 +68,8 @@ CTA_IMAGE = {'home': 'renewables-hero', 'electrical-installation': 'home-about-s
              'blog': 'renewables-solar', 'industrial-electrical-contractors': 'card-swan',
              'commercial-ev-charging-installation': 'busdepot-2', 'commercial-solar-pv-installation': 'renewables-hero',
              'eicr-fixed-wire-testing': 'compliance-hero', 'commercial-led-lighting': 'home-cta-warehouse',
-             'home-solar-battery-installation': 'home-energy-art'}
+             'home-solar-battery-installation': 'home-energy-art',
+             'assessment': 'renewables-solar'}
 TRUST = [
     ('badge-check', 'NICEIC Approved', 'Approved contractor, with MCS and SafeContractor accreditation.'),
     ('factory', 'Commercial & Industrial Focus', 'Electrical solutions tailored to commercial, industrial and public sector environments.'),
@@ -436,6 +438,7 @@ def footer(ctx):
     svc = ''.join('<li><a href="%s">%s</a></li>' % (ctx.u('/%s/' % k), e(SERVICES[k]['name'])) for k in SERVICE_ORDER)
     svc += ''.join('<li class="sub"><a href="%s">%s</a></li>' % (ctx.u('/%s/' % k), e(LANDING[k]['name'])) for k in LANDING_ORDER)
     svc += '<li class="sub"><a href="%s">%s</a></li>' % (ctx.u('/%s/' % RESIDENTIAL['slug']), e(RESIDENTIAL['name']))
+    svc += '<li class="sub"><a href="%s">%s</a></li>' % (ctx.u(ASSESS.PATH), 'Free Site Energy Assessment')
     return f'''
 <footer class="site-footer">
   <div class="container footer-grid">
@@ -494,6 +497,18 @@ def org_jsonld():
                                        'opens': SITE['hours']['opens'], 'closes': SITE['hours']['closes']}],
         'sameAs': [SITE['google_profile'], SITE['facebook'], SITE['instagram'], SITE['linkedin']],
     }
+
+
+def website_jsonld():
+    """Tell Google the site's name directly.
+
+    Google shows a site name above every result (with the logo) and works it out from this
+    block first, then from titles and og:site_name. The home page title no longer carries
+    the brand, so this is what keeps that line reading "Econ Electrical" rather than the
+    domain or some phrase Google picks for itself.
+    """
+    return {'@context': 'https://schema.org', '@type': 'WebSite', '@id': SITE['domain'] + '/#website',
+            'name': SITE['name'], 'alternateName': SITE['legal'], 'url': SITE['domain'] + '/'}
 
 
 def document(ctx, meta, body, preview_main=False):
@@ -828,7 +843,8 @@ def page_home(ctx):
 {testimonials(ctx, alt=False)}
 {logos_section(ctx, alt=True)}
 {cta_band(ctx, 'home', 'Ready to Start Your Project?', 'Let’s Build a Smarter, Greener Tomorrow', CTA_DEFAULT)}'''
-    meta = {'title': HOME['title'], 'description': HOME['description'], 'path': '/', 'jsonld': [org_jsonld()]}
+    meta = {'title': HOME['title'], 'description': HOME['description'], 'path': '/',
+            'jsonld': [website_jsonld(), org_jsonld()]}
     return meta, body
 
 
@@ -1134,6 +1150,7 @@ def page_landing(ctx, slug):
   </div>
 </section>
 {landing_proof(ctx, d)}
+{assess_banner(ctx) if slug in ASSESS_ON else ''}
 {process_section(ctx, d['process'], alt=not d['proof'])}
 <section class="section{' section-alt' if d['proof'] else ''}">
   <div class="container duo">
@@ -1457,6 +1474,197 @@ def page_about(ctx):
     return meta, body
 
 
+# The pages where someone is already weighing up solar, batteries or charging, and
+# where the honest next step is a survey rather than a quote. Not the residential page:
+# the assessment is a commercial exercise built on a year of half hourly data.
+ASSESS_ON = {'commercial-solar-pv-installation', 'commercial-ev-charging-installation',
+             'industrial-electrical-contractors'}
+
+
+def assess_banner(ctx):
+    """A standing offer dropped into the pages where it is the obvious next move."""
+    return f'''
+<section class="section flush-top" aria-label="Free site energy assessment">
+  <div class="container">
+    <a class="assess-banner" href="{ctx.u(ASSESS.PATH)}">
+      <span class="ico-box">{icon('scan-search')}</span>
+      <span class="ab-text">
+        <b>Not sure what your site could save?</b>
+        <span>Book a free site energy assessment. We look at your bills, your roof and your supply, then send you a report with real numbers. No charge and no obligation.</span>
+      </span>
+      <span class="circle">{arrow()}</span>
+    </a>
+  </div>
+</section>'''
+
+
+def faq_block(ctx, faqs, heading='Got Questions?'):
+    """A questions section, in the same shape the service and landing pages use."""
+    items = ''.join(
+        '<details><summary>%s<span class="pm">%s</span></summary><p class="ans">%s</p></details>'
+        % (e(q), icon('plus'), e(a)) for q, a in faqs)
+    return f'''
+<section class="section section-alt">
+  <div class="container">
+    <div class="panel" data-reveal>
+      {eyebrow('Frequently Asked Questions')}
+      <h2 style="font-size:clamp(1.8rem,1.3rem + 1.6vw,2.6rem)">{e(heading)}</h2>
+      <div class="faq">{items}</div>
+      <a class="link-arrow" href="{ctx.u(CONTACT)}">Ask Our Team <span class="circle">{arrow()}</span></a>
+    </div>
+  </div>
+</section>'''
+
+
+def faq_jsonld(faqs):
+    return {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [
+        {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}}
+        for q, a in faqs]}
+
+
+def assess_field(ctx, f):
+    """One question on the assessment form.
+
+    Everything is a labelled control in the same shape so the form reads as one list
+    rather than a pile of different widgets. Nothing marked 'lease' is ever required
+    in the HTML: the script hides that group for owner occupiers, and a required
+    field the browser cannot show is a submit button that silently does nothing.
+    """
+    fid = 'a-' + f['name']
+    req = ' required' if f.get('required') else ''
+    opt = ' <span class="opt">(optional)</span>' if f.get('optional') else ''
+    cls = 'field' + (' full' if f.get('full') else '') + (' lease-only' if f.get('lease') else '')
+    help_html = '<p class="field-help">%s</p>' % e(f['help']) if f.get('help') else ''
+
+    if f['type'] == 'select':
+        opts = ''.join('<option value="%s">%s</option>' % (e(o), e(o)) for o in f['options'])
+        ctrl = ('<div class="select-wrap"><select id="%s" name="%s"%s>'
+                '<option value="" disabled selected>Choose one</option>%s</select>%s</div>'
+                % (fid, f['name'], req, opts, icon('chevron-down')))
+    elif f['type'] == 'file':
+        ctrl = ('<label class="file-drop" for="%s">%s'
+                '<span class="file-text"><b>Choose a file</b><small>or drag it here</small></span>'
+                '<input id="%s" name="%s" type="file" accept="%s"%s></label>'
+                '<p class="file-name" data-file-name hidden></p>'
+                % (fid, icon('plus'), fid, f['name'], e(f.get('accept', '')), req))
+    elif f['type'] == 'checkbox':
+        return ('<div class="%s"><label class="check" for="%s">'
+                '<input id="%s" name="%s" type="checkbox" value="Yes">'
+                '<span class="box">%s</span><span>%s</span></label>%s</div>'
+                % (cls, fid, fid, f['name'], icon('check'), e(f['text']), help_html))
+    elif f['type'] == 'textarea':
+        ctrl = '<textarea id="%s" name="%s" placeholder="%s"%s></textarea>' % (
+            fid, f['name'], e(f.get('placeholder', '')), req)
+    else:
+        ctrl = '<input id="%s" name="%s" type="%s" placeholder="%s"%s%s>' % (
+            fid, f['name'], f['type'], e(f.get('placeholder', '')),
+            ' autocomplete="%s"' % f['autocomplete'] if f.get('autocomplete') else '', req)
+    return '<div class="%s"><label for="%s">%s%s</label>%s%s</div>' % (
+        cls, fid, e(f['label']), opt, ctrl, help_html)
+
+
+def page_assessment(ctx):
+    if ctx.mode == 'site':
+        # enctype matters: without it the roof photo and the bills never leave the browser.
+        form_open = ('<form class="form assess-form" name="%s" method="POST" action="%s" '
+                     'data-netlify="true" netlify-honeypot="bot-field" '
+                     'enctype="multipart/form-data" data-assess>\n'
+                     '<input type="hidden" name="form-name" value="%s">\n'
+                     '<input type="hidden" name="subject" data-remove-prefix '
+                     'value="Free site energy assessment request from econelectrical.co.uk">\n'
+                     '<p class="hp"><label>Leave this empty '
+                     '<input name="bot-field" tabindex="-1" autocomplete="off"></label></p>'
+                     ) % (ASSESS.NAME, ASSESS.THANKS, ASSESS.NAME)
+    else:
+        form_open = ('<form class="form assess-form" name="%s" method="POST" '
+                     'data-preview data-email="%s" data-assess>' % (ASSESS.NAME, SITE['email']))
+
+    groups = ''
+    for title, intro, fields in ASSESS.FIELDS:
+        groups += ('<fieldset class="assess-group"><legend>%s</legend>%s<div class="assess-fields">%s</div></fieldset>'
+                   % (e(title),
+                      '<p class="assess-note">%s</p>' % e(intro) if intro else '',
+                      ''.join(assess_field(ctx, f) for f in fields)))
+
+    shows = ''.join(
+        '<article class="rep-card" data-reveal><span class="ico-box">%s</span>'
+        '<h3>%s</h3><p>%s</p></article>' % (icon(ic), e(h), e(p))
+        for ic, h, p in ASSESS.REPORT_SHOWS)
+    steps = ''.join(
+        '<li><span class="n">%d</span><div><h3>%s</h3><p>%s</p></div></li>' % (i, e(h), e(p))
+        for i, (h, p) in enumerate(ASSESS.PROCESS, 1))
+    assures = ''.join(
+        '<li>%s<div><b>%s</b><span>%s</span></div></li>' % (icon(ic), e(h), e(p))
+        for ic, h, p in ASSESS.ASSURANCES)
+
+    body = f'''
+<section class="page-hero short">
+  {img(ctx, 'solarbradford-1', 'Commercial solar array installed by Econ Electrical on a factory roof in Bradford', '100vw', eager=True)}
+  <div class="grain"></div>
+  <div class="container page-hero-inner">
+    {crumbs(ctx, [('Home', '/'), ('Free Site Energy Assessment', None)])}
+    <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>{e(ASSESS.HERO['kicker'])}</p>
+    <h1 class="words">{words(ASSESS.HERO['h1'])[0]}</h1>
+    <p class="lead fade-up" style="--d:.45s">{e(ASSESS.HERO['lede'])}</p>
+    <div class="hero-cta fade-up" style="--d:.6s">
+      <a class="btn btn-primary" href="#request">Request Your Assessment<span class="btn-ico">{arrow()}</span></a>
+      <a class="btn btn-glass" href="tel:{SITE['phone_href']}"><span class="btn-ico">{icon('phone')}</span>{SITE['phone']}</a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>{eyebrow('What You Get')}<h2>Your Report Shows</h2></div>
+    <div class="rep-grid" data-stagger>{shows}</div>
+    <ul class="assure" data-reveal>{assures}</ul>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head" data-reveal>{eyebrow('How It Works')}<h2>Four Steps, About a Week</h2></div>
+    <ol class="assess-steps" data-stagger>{steps}</ol>
+  </div>
+</section>
+
+<section class="section" id="request">
+  <div class="container">
+    <div class="form-card" data-reveal>
+      <div style="display:grid;gap:14px">
+        {eyebrow('Request Your Assessment')}
+        <h2 style="font-size:clamp(1.9rem,1.4rem + 1.6vw,2.8rem)">Tell Us About Your Site</h2>
+        <p class="assess-lead">Five minutes. Answer what you can and leave the rest, we will pick it up when we speak.</p>
+      </div>
+      {form_open}
+        {groups}
+        <div class="form-foot">
+          <span class="form-note">{icon('shield-check')}<span>Your details are only used for this assessment. <a href="{ctx.u('/privacy-notice/')}">Privacy notice</a></span></span>
+          <button class="btn btn-primary" type="submit">Request My Assessment<span class="btn-ico">{arrow()}</span></button>
+        </div>
+        <p class="form-status" role="status" hidden></p>
+      </form>
+    </div>
+  </div>
+</section>
+
+{faq_block(ctx, ASSESS.FAQS)}
+{cta_band(ctx, 'assessment', 'Rather Talk It Through First?', 'Give Us a Call', CTA_DEFAULT)}'''
+
+    ld = {'@context': 'https://schema.org', '@type': 'Service',
+          'name': 'Free Site Energy Assessment',
+          'serviceType': 'Commercial energy assessment for solar, battery storage and EV charging',
+          'provider': business_ref(),
+          'areaServed': {'@type': 'Country', 'name': 'United Kingdom'},
+          'description': ASSESS.HERO['description'],
+          'offers': {'@type': 'Offer', 'price': '0', 'priceCurrency': 'GBP',
+                     'description': 'Free of charge with no obligation'}}
+    meta = {'title': ASSESS.HERO['title'], 'description': ASSESS.HERO['description'],
+            'path': ASSESS.PATH, 'image': abs_img('solarbradford-1'),
+            'jsonld': [ld, faq_jsonld(ASSESS.FAQS)]}
+    return meta, body
+
+
 def page_contact(ctx):
     if ctx.mode == 'site':
         form_open = ('<form class="form" name="contact" method="POST" action="/thank-you/" data-netlify="true" '
@@ -1703,6 +1911,72 @@ def page_privacy(ctx):
     return meta, body
 
 
+def page_assessment_thanks(ctx):
+    """What the person sees the moment they submit.
+
+    A generic thank you wastes the one screen where someone is paying full attention.
+    This one tells them what happens next and when, so nobody is left wondering
+    whether the form went anywhere, and it asks for the two things that most often
+    hold the report up: a year of bills, and the signed Letter of Authority.
+    """
+    # No automatic confirmation email goes to the person, so this does not promise
+    # one. Telling someone to watch their inbox for a message that never arrives is
+    # worse than telling them nothing.
+    steps = [('Today', 'Your request is with us and nothing more is needed from you. If you '
+                       'have heard nothing by tomorrow afternoon, ring 01924 677085, because '
+                       'it means something has gone wrong at our end.'),
+             ('Within one working day', 'One of us calls you to confirm what you have sent and '
+                                        'book the site visit around your hours.'),
+             ('If you ticked the Letter of Authority', 'We email you a one page form to sign. '
+                                                       'It takes a minute and it is what lets us '
+                                                       'pull your half hourly usage.'),
+             ('About a week after the visit', 'Your report arrives, and we walk through it with '
+                                              'you rather than just emailing it over.')]
+    rows = ''.join('<li><span class="when">%s</span><p>%s</p></li>' % (e(w), e(p)) for w, p in steps)
+    # The right hand column would otherwise be dead space on a page people read
+    # carefully. These are the three pages that answer the questions the report
+    # raises, so the wait is spent on the site rather than off it.
+    waiting = ''.join(
+        '<li><a href="%s">%s%s</a></li>' % (ctx.u(u), e(t), icon('arrow-right'))
+        for u, t in [('/commercial-solar-pv-installation/', 'Commercial Solar PV'),
+                     ('/commercial-battery-storage-solar-pv/', 'Battery Storage'),
+                     ('/commercial-ev-charging-installation/', 'Commercial EV Charging')])
+    body = f'''
+<section class="page-hero plain" style="min-height:clamp(520px,64vh,680px);align-items:center">
+  <div class="container page-hero-inner">
+    <div class="notice">
+      <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>Request Received</p>
+      <h1 class="words">{words('Thanks, We Have Got It')[0]}</h1>
+      <p class="lead fade-up" style="--d:.45s">Your site is in the diary to be looked at. Here is exactly what happens from here, so you are not left wondering.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section flush-top">
+  <div class="container">
+    <div class="thanks-cols">
+      <ol class="next-steps" data-stagger>{rows}</ol>
+      <aside class="panel wait-panel" data-reveal>
+        <h2 class="h-sm">While you wait</h2>
+        <p>Three pages worth a read before we come out, so you know what you are looking at when the report lands.</p>
+        <ul class="wait-links">{waiting}</ul>
+      </aside>
+    </div>
+    <div class="panel next-panel" data-reveal>
+      <h2 style="font-size:clamp(1.5rem,1.2rem + 1vw,2rem)">Want to speed it up?</h2>
+      <p>The one thing that holds these up is electricity data. If you did not attach a year of bills, forward whatever you have to <a href="mailto:{SITE['email']}?subject=Site%20energy%20assessment%20bills">{SITE['email']}</a> and we will get going sooner.</p>
+      <div class="btn-row">
+        <a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a>
+        {btn(ctx.u('/commercial-solar-pv-installation/'), 'Read About Commercial Solar')}
+      </div>
+    </div>
+  </div>
+</section>'''
+    return {'title': 'Assessment Requested | Econ Electrical',
+            'description': 'Your free site energy assessment request has been received.',
+            'path': ASSESS.THANKS, 'noindex': True}, body
+
+
 def page_simple(ctx, path, kicker, h1, lede, title):
     body = f'''
 <section class="page-hero plain" style="min-height:clamp(560px,78vh,760px);align-items:center">
@@ -1749,6 +2023,7 @@ def all_pages():
         ctx, '/thank-you/', 'Message Sent', 'Thanks for Getting in Touch',
         'We’ll get back to you as soon as we can. If it’s urgent, call us on %s.' % SITE['phone'],
         'Thank You | Econ Electrical'))]
+    pages += [(ASSESS.PATH, page_assessment), (ASSESS.THANKS, page_assessment_thanks)]
     return pages
 
 
@@ -1790,7 +2065,61 @@ def build(mode):
                                  'The page you’re looking for has moved or no longer exists.', 'Page Not Found | Econ Electrical')
         write(os.path.join(out, '404.html'), document(ctx, meta, body))
         write_site_extras(out, paths)
+        write_function()
     return out
+
+
+# Who each form goes to. Everything from the site goes to Jonathan and nowhere
+# else, which is how he asked for it: one inbox, and he forwards what Robert or
+# the office needs. Adding a recipient is a one line change here.
+FORM_ROUTING = {
+    'site-assessment': {'to': ['jonathan@econelectrical.co.uk'], 'cc': [],
+                        'title': 'Site Energy Assessment Request',
+                        'subject': 'Site assessment'},
+    'contact': {'to': ['jonathan@econelectrical.co.uk'], 'cc': [],
+                'title': 'Website Enquiry',
+                'subject': 'Website enquiry'},
+}
+
+# The contact form is written inline in page_contact rather than as data, so its
+# labels are listed here. Short enough that a mismatch would be obvious; the
+# check below fails the build if one creeps in.
+CONTACT_FIELDS = [['The enquiry', [
+    {'name': 'name', 'label': 'Name', 'type': 'text'},
+    {'name': 'company', 'label': 'Company', 'type': 'text'},
+    {'name': 'email', 'label': 'Email', 'type': 'email'},
+    {'name': 'phone', 'label': 'Phone', 'type': 'tel'},
+    {'name': 'message', 'label': 'Message', 'type': 'textarea'},
+]]]
+
+
+def write_function():
+    """Generate the Netlify function that emails a website enquiry to the office.
+
+    The labels come straight from the form definitions, so an email can never
+    show a question the form no longer asks, or a raw field name for one it has
+    gained. It lands in dist/functions rather than dist/site because a function
+    inside the published folder would also be served as a downloadable file.
+    """
+    assess = [[heading, [{'name': f['name'], 'label': f['label'], 'type': f['type']}
+                         for f in fs]]
+              for heading, _note, fs in ASSESS.FIELDS]
+    forms = {k: dict(v) for k, v in FORM_ROUTING.items()}
+    forms['site-assessment']['fields'] = assess
+    forms['contact']['fields'] = CONTACT_FIELDS
+
+    # Every field the function claims to know about has to exist on the page it
+    # came from, or the email would quietly drop an answer somebody typed.
+    html = open(os.path.join(HERE, 'dist', 'site', 'contact-us-wakefield-electricians',
+                             'index.html')).read()
+    missing = [f['name'] for _h, fs in CONTACT_FIELDS for f in fs
+               if 'name="%s"' % f['name'] not in html]
+    if missing:
+        raise SystemExit('contact form has no fields named: %s' % ', '.join(missing))
+
+    src = open(os.path.join(HERE, 'function', 'submission-created.js')).read()
+    src = src.replace('__FORMS__', json.dumps(forms, indent=2, ensure_ascii=False))
+    write(os.path.join(HERE, 'dist', 'functions', 'submission-created.js'), src)
 
 
 def write_site_extras(out, paths):

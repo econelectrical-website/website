@@ -596,6 +596,148 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
 .form-note { color: var(--muted); font-size: 0.9rem; display: inline-flex; gap: 8px; align-items: center; }
 .form-note svg { width: 16px; height: 16px; color: var(--sage); }
 .form-status { grid-column: 1 / -1; padding: 16px 18px; border-radius: 14px; background: rgba(158, 202, 132, 0.1); border: 1px solid rgba(158, 202, 132, 0.35); color: var(--white); }
+
+/* ---- Free Site Energy Assessment ------------------------------------------
+   The form asks for a lot, so it is broken into named groups with the questions
+   inside them. A long undivided list of sixteen fields reads as a chore before
+   anyone has typed anything; five short sections read as five small jobs. */
+.assess-form { gap: 34px; }
+/* A legend is positioned by the browser against the fieldset's border rather than
+   laid out in normal flow, so inside a grid it sits on top of the first field's
+   label. Floating it puts it back in the flow, and the block below clears it. That
+   is the whole reason this is a float in 2026. */
+.assess-group { grid-column: 1 / -1; border: 0; padding: 0; margin: 0; display: block; }
+.assess-group legend { float: left; width: 100%; padding: 0; margin: 0 0 14px;
+  font: 700 0.78rem/1 var(--body); letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--sage); }
+.assess-fields { clear: both; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+.assess-note { clear: both; }
+.assess-note, .assess-lead { color: var(--muted); font-size: 0.94rem; margin: 0 0 16px; max-width: 62ch; }
+.field-help { margin: 0; color: var(--muted); font-size: 0.84rem; line-height: 1.5; max-width: 62ch; }
+
+/* A select has to be restyled from scratch to match the text inputs, and the arrow
+   is ours because the native one cannot be recoloured for a dark field. */
+.select-wrap { position: relative; display: block; }
+.select-wrap select { -webkit-appearance: none; appearance: none; width: 100%; min-height: 56px;
+  padding: 16px 48px 16px 18px; border-radius: 14px; border: 1px solid var(--line-2);
+  background: rgba(255, 255, 255, 0.03); color: var(--white); font: 500 1rem/1.4 var(--body);
+  cursor: pointer; transition: border-color .3s, box-shadow .3s, background-color .3s; }
+.select-wrap select:focus { outline: none; border-color: var(--sage);
+  background: rgba(158, 202, 132, 0.05); box-shadow: 0 0 0 4px rgba(158, 202, 132, 0.14); }
+.select-wrap select:invalid { color: rgba(255, 255, 255, 0.35); }
+/* The menu itself is drawn by the operating system, so its colours have to be set
+   on the options or a dark theme renders white text on white. */
+.select-wrap select option { background: #141614; color: #fff; }
+.select-wrap svg { position: absolute; right: 18px; top: 50%; translate: 0 -50%; width: 18px;
+  height: 18px; color: var(--muted); pointer-events: none; }
+
+/* The real file input is hidden behind its own label, which is the only way to style
+   one, and the label stays a label so a keyboard and a screen reader still reach it. */
+.file-drop { display: flex; align-items: center; gap: 14px; min-height: 56px; padding: 14px 18px;
+  border-radius: 14px; border: 1px dashed var(--line-2); background: rgba(255, 255, 255, 0.02);
+  cursor: pointer; transition: border-color .3s, background-color .3s; }
+.file-drop:hover, .file-drop:focus-within { border-color: var(--sage); background: rgba(158, 202, 132, 0.05); }
+.file-drop svg { width: 20px; height: 20px; color: var(--sage); flex: none; }
+.file-text { display: grid; }
+.file-text b { font: 600 0.96rem/1.3 var(--body); color: var(--white); }
+.file-text small { color: var(--muted); font-size: 0.82rem; }
+.file-drop input[type="file"] { position: absolute; width: 1px; height: 1px; opacity: 0;
+  pointer-events: none; }
+.file-name { margin: 0; font-size: 0.86rem; color: var(--sage); display: flex; gap: 7px; align-items: center; }
+
+/* A checkbox's label is a sentence, not a field name, so it opts out of the
+   uppercase label treatment the other fields get. */
+.check { display: flex; gap: 13px; align-items: flex-start; cursor: pointer; line-height: 1.55; }
+.field label.check { font: 500 0.95rem/1.55 var(--body); letter-spacing: 0;
+  text-transform: none; color: var(--white); }
+.check input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.check .box { flex: none; width: 24px; height: 24px; margin-top: 1px; border-radius: 8px;
+  border: 1px solid var(--line-2); background: rgba(255, 255, 255, 0.03); display: grid;
+  place-items: center; transition: background-color .25s, border-color .25s; }
+.check .box svg { width: 15px; height: 15px; color: var(--ink); opacity: 0; transition: opacity .2s; }
+.check input:checked + .box { background: var(--sage); border-color: var(--sage); }
+.check input:checked + .box svg { opacity: 1; }
+.check input:focus-visible + .box { box-shadow: 0 0 0 4px rgba(158, 202, 132, 0.2); }
+
+/* Hidden until someone says they lease. Owner occupiers never see two questions that
+   do not apply to them, and a tenant gets asked the thing that decides the job. */
+.lease-only[hidden] { display: none; }
+
+.rep-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 30px; }
+.rep-card { padding: 28px; border-radius: var(--r-lg); border: 1px solid var(--line);
+  background: var(--panel); display: grid; gap: 12px; align-content: start; }
+.rep-card h3 { font-size: 1.12rem; }
+.rep-card p { color: var(--muted); font-size: 0.94rem; margin: 0; }
+
+.assure { list-style: none; margin: 30px 0 0; padding: 22px; display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; border-radius: var(--r-lg);
+  border: 1px solid var(--line); background: var(--sheen); }
+.assure li { display: flex; gap: 13px; align-items: flex-start; }
+.assure svg { width: 20px; height: 20px; color: var(--sage); flex: none; margin-top: 2px; }
+.assure b { display: block; font-size: 0.96rem; }
+.assure span { color: var(--muted); font-size: 0.88rem; line-height: 1.5; }
+
+.assess-steps { list-style: none; margin: 30px 0 0; padding: 0; display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.assess-steps li { display: grid; gap: 14px; align-content: start; }
+.assess-steps .n { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center;
+  background: rgba(158, 202, 132, 0.12); border: 1px solid rgba(158, 202, 132, 0.4);
+  color: var(--sage); font: 700 1.05rem/1 var(--body); }
+.assess-steps h3 { font-size: 1.08rem; margin-bottom: 7px; }
+.assess-steps p { color: var(--muted); font-size: 0.92rem; margin: 0; }
+
+/* The confirmation page is read carefully, so the second column carries the three
+   pages that answer what the report will raise rather than sitting empty. */
+.thanks-cols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 40px;
+  align-items: start; }
+.wait-panel { display: grid; gap: 14px; padding: clamp(26px, 2.4vw, 34px); }
+.wait-panel p { color: var(--muted); font-size: 0.94rem; margin: 0; }
+.h-sm { font-size: clamp(1.2rem, 1.05rem + 0.5vw, 1.4rem); margin: 0; }
+.wait-links { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.wait-links a { display: flex; align-items: center; justify-content: space-between; gap: 14px;
+  padding: 14px 0; border-top: 1px solid var(--line); color: var(--white);
+  text-decoration: none; font: 600 0.98rem/1.35 var(--body); transition: color .25s; }
+.wait-links li:last-child a { border-bottom: 1px solid var(--line); }
+.wait-links a svg { width: 17px; height: 17px; flex: none; color: var(--sage);
+  transition: translate .25s; }
+.wait-links a:hover { color: var(--sage); }
+.wait-links a:hover svg { translate: 4px 0; }
+
+.next-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; max-width: 760px; }
+.next-steps li { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 20px;
+  padding: 20px 0; border-top: 1px solid var(--line); align-items: start; }
+.next-steps li:last-child { border-bottom: 1px solid var(--line); }
+.next-steps .when { font: 700 0.78rem/1.4 var(--body); letter-spacing: 0.07em;
+  text-transform: uppercase; color: var(--sage); }
+.next-steps p { margin: 0; color: var(--muted); }
+.next-panel { margin-top: 40px; max-width: 760px; display: grid; gap: 14px; }
+
+.assess-banner { display: flex; gap: 22px; align-items: center; padding: 26px 30px;
+  border-radius: var(--r-lg); border: 1px solid rgba(158, 202, 132, 0.3);
+  background: radial-gradient(120% 140% at 0% 0%, rgba(158, 202, 132, 0.14), rgba(158, 202, 132, 0.02) 60%), var(--panel);
+  transition: border-color .3s, transform .3s var(--ease); }
+.assess-banner:hover { border-color: rgba(158, 202, 132, 0.6); transform: translateY(-2px); }
+.assess-banner .ab-text { display: grid; gap: 5px; }
+.assess-banner b { font-size: 1.14rem; }
+.assess-banner .ab-text span { color: var(--muted); font-size: 0.94rem; line-height: 1.55; }
+.assess-banner .circle { flex: none; margin-left: auto; }
+@media (max-width: 760px) {
+  .assess-banner { flex-wrap: wrap; gap: 16px; padding: 22px; }
+  .assess-banner .circle { margin-left: 0; }
+}
+
+@media (max-width: 980px) {
+  .rep-grid, .assess-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .assure { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .assess-fields { grid-template-columns: minmax(0, 1fr); }
+  .rep-grid, .assess-steps { grid-template-columns: minmax(0, 1fr); }
+  .next-steps li { grid-template-columns: minmax(0, 1fr); gap: 7px; }
+}
+@media (max-width: 940px) {
+  .thanks-cols { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+}
 .hp { position: absolute !important; left: -9999px; }
 .info-card { display: grid; gap: 4px; padding: clamp(28px, 3vw, 40px); border-radius: var(--r-lg); border: 1px solid var(--line); background: var(--sheen); }
 .info-row { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; align-items: start; padding: 20px 0; border-bottom: 1px solid var(--line); }
