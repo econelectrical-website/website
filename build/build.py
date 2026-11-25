@@ -41,7 +41,7 @@ CONTACT = '/contact-us-wakefield-electricians/'
 # has landed, this stays False and no page promises an email that never comes.
 # Flip it to True, rebuild and deploy, and every thank you page and the enquiry
 # page start saying "check your inbox".
-AUTO_REPLY = False
+AUTO_REPLY = True
 
 # ---------------------------------------------------------------- design data
 SERVICE_ICON = {'electrical-installation': 'zap', 'renewables': 'sun', 'compliance': 'shield-check'}
@@ -1973,8 +1973,8 @@ def first_step(what):
     """The opening line of every confirmation page. Only promises an email when
     the confirmation email is actually switched on."""
     if AUTO_REPLY:
-        return ('Straight away', 'A confirmation email is on its way to you now with a copy of your %s. '
-                                 'If it is not in your inbox in a few minutes, check your junk folder.' % what)
+        return ('Straight away', 'A confirmation email is on its way to you now. If it is not in your '
+                                 'inbox in a few minutes, check your junk folder.')
     return ('Straight away', 'Your %s has come straight through to our team, and nothing more is needed '
                              'from you.' % what)
 
