@@ -50,8 +50,9 @@ const FORMS = {
         "jonathan@econelectrical.co.uk"
       ],
       "subject": "Your enquiry with Econ Electrical",
+      "kicker": "Enquiry received",
       "preheader": "A member of our team will be in touch within one working day.",
-      "intro": "Thanks for your enquiry. It has come through safely and is with us now.",
+      "intro": "Your enquiry has come through safely and is with us now.",
       "promise": "A member of our team will be in touch within one working day.",
       "summary_heading": "Your enquiry",
       "echo": [
@@ -293,8 +294,9 @@ const FORMS = {
         "jonathan@econelectrical.co.uk"
       ],
       "subject": "Your free site energy assessment request",
+      "kicker": "Request received",
       "preheader": "A member of our team will be in touch within one working day to book your site visit.",
-      "intro": "Thanks for requesting a free site energy assessment. Your site details have come through safely.",
+      "intro": "Your request for a free site energy assessment has come through safely, along with your site details.",
       "promise": "A member of our team will be in touch within one working day to book your site visit.",
       "summary_heading": "",
       "echo": [],
@@ -509,8 +511,9 @@ const FORMS = {
         "jonathan@econelectrical.co.uk"
       ],
       "subject": "Your message to Econ Electrical",
+      "kicker": "Message received",
       "preheader": "A member of our team will be in touch within one working day.",
-      "intro": "Thanks for getting in touch. Your message has come through safely.",
+      "intro": "Your message has come through safely and is with us now.",
       "promise": "A member of our team will be in touch within one working day.",
       "summary_heading": "",
       "echo": [],
@@ -555,6 +558,7 @@ const SITE = {
   "legal": "Econ Electrical Ltd",
   "phone": "01924 677085",
   "phone_href": "+441924677085",
+  "email": "info@econelectrical.co.uk",
   "hours_text": "Monday to Friday, 7:30am to 5pm",
   "address": [
     "The Courtyard",
@@ -607,10 +611,11 @@ function when(iso) {
   }).replace(',', ' at');
 }
 
-/* The value of one field. Tick box groups can arrive three ways: as the plain
+/* The value of one field. Tick box groups can arrive several ways: as the plain
    field the page script fills in ("Solar PV; EV charging"), or, if the script did
-   not run, as name[] in either a list or a single string. All of them come out
-   as one list. A semicolon separates them because some answers contain commas. */
+   not run, as the boxes themselves (name_ticked[], or name[] from before they
+   were renamed) in either a list or a single string. All of them come out as one
+   list. A semicolon separates them because some answers contain commas. */
 function listOf(data, name) {
   const out = [];
   const add = v => {
@@ -620,7 +625,9 @@ function listOf(data, name) {
     }
   };
   add(data[name]);
-  if (!out.length) add(data[name + '[]']);
+  for (const alt of [name + '_ticked[]', name + '_ticked', name + '[]']) {
+    if (!out.length) add(data[alt]);
+  }
   return out.filter((v, i) => out.indexOf(v) === i);
 }
 
@@ -768,7 +775,7 @@ function buildEmail(form, data, meta) {
   <tr><td style="padding:28px;">
     <div style="font:400 13px/1.6 Arial,sans-serif;color:${GREY};border-top:1px solid ${RULE};padding-top:18px;">
       Reply to this email and it goes straight to ${esc(data.email || 'the sender')}.<br>
-      Submitted ${esc(when(meta.created_at))} from the website.
+      Submitted ${esc(when(meta.created_at))} from the website. Ref ${esc(reference(meta))}.
       <a href="${INBOX}" style="color:${GREY};">All submissions</a>
     </div>
   </td></tr>
@@ -786,7 +793,7 @@ function buildEmail(form, data, meta) {
       ...g.pairs.map(([k, v]) => '  ' + k + ': ' + plain(v))]),
     '',
     ...(files.length ? ['ATTACHMENTS', ...files.map(f => '  ' + f.name + ' ' + f.url), ''] : []),
-    'Submitted ' + when(meta.created_at) + ' from the website.',
+    'Submitted ' + when(meta.created_at) + ' from the website. Ref ' + reference(meta) + '.',
   ].join('\n');
 
   const subject = cfg.subject + ': ' + headline + (place ? ', ' + place : '') +
@@ -794,117 +801,183 @@ function buildEmail(form, data, meta) {
   return { subject, html, text };
 }
 
-/* "Hi Sarah," when the name field holds something that looks like a first name,
-   "Hello," when it does not. Never a link, a number or a sentence. */
-function greeting(name) {
+/* The first name, when the name field holds something that looks like one.
+   Never a link, a number or a sentence: otherwise nothing, and the email simply
+   says "Thank you." */
+function firstName(name) {
   const first = String(name || '').trim().split(/\s+/)[0] || '';
-  if (!/^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ'’-]{0,23}$/.test(first)) return 'Hello,';
-  return 'Hi ' + first.charAt(0).toUpperCase() + first.slice(1) + ',';
+  if (!/^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ'’-]{0,23}$/.test(first)) return '';
+  return first.charAt(0).toUpperCase() + first.slice(1);
 }
 
 function validEmail(v) {
   return typeof v === 'string' && v.length <= 254 && /^[^\s@<>()",;:]+@[^\s@<>()",;:]+\.[A-Za-z]{2,}$/.test(v);
 }
 
-/* The confirmation the customer gets. White, black and the brand green, the dark
-   logo on top, and only answers the form itself offered echoed back. */
-function buildReply(form, data) {
+/* A short reference the customer can quote and Jonathan can search his inbox
+   for: ECON, the date in London, and the end of Netlify's own submission id. */
+function reference(meta) {
+  let d = meta && meta.created_at ? new Date(meta.created_at) : new Date();
+  if (isNaN(d)) d = new Date();
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', year: '2-digit', month: '2-digit', day: '2-digit',
+  }).formatToParts(d);
+  const get = t => (parts.find(p => p.type === t) || {}).value || '';
+  const tail = String((meta && meta.id) || '').replace(/[^a-z0-9]/gi, '').slice(-4).toUpperCase();
+  return 'ECON-' + get('year') + get('month') + get('day') + (tail ? '-' + tail : '');
+}
+
+/* The confirmation the customer gets. Built to read like a letter from an
+   established contractor rather than a form receipt: the black header carries
+   the logo exactly as it appears on Econ's other material, the type is quiet
+   and well spaced, and the only colour is the brand green rule under the logo.
+   Only answers the form itself offered are echoed back. */
+const FONT = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+const INK = '#0b0b0b';
+const BODY = '#3d3d3d';
+const MUTED = '#8c8c8c';
+const HAIR = '#e8e8e6';
+const PAGE = '#efefec';
+const FOOT = '#f7f7f5';
+
+function longhand(html) {
+  return html.replace(/font:(\d{3}) ([\d.]+px)\/([\d.]+(?:px)?) ([^;"]+)/g,
+    (m, weight, size, height, family) =>
+      `font-family:${family};font-size:${size};line-height:${height};font-weight:${weight}`);
+}
+
+function label(text, extra) {
+  return `<div style="font:700 11px/1.4 ${FONT};letter-spacing:2.2px;text-transform:uppercase;color:${MUTED};${extra || ''}">${esc(text)}</div>`;
+}
+
+function buildReply(form, data, meta) {
   const cfg = FORMS[form];
   const r = cfg.reply;
   const byName = {};
   for (const [, fields] of cfg.fields) for (const f of fields) byName[f.name] = f;
   const rows = [];
-  for (const [name, label] of (r.echo || [])) {
+  for (const [name, title] of (r.echo || [])) {
     const f = byName[name];
     if (!f) continue;
     const v = f.type === 'chips' ? listOf(data, name) : data[name];
     if (!v || (Array.isArray(v) && !v.length)) continue;
     const ok = allowed(f, v);
-    if (ok.length) rows.push([label, ok]);
+    if (ok.length) rows.push([title, ok]);
   }
-  const hello = greeting(data.name);
-  const tel = SITE.phone_href;
+  const first = firstName(data.name);
+  const heading = first ? 'Thank you, ' + first + '.' : 'Thank you.';
+  const ref = reference(meta);
+  const site = SITE.domain;
+  const bare = site.replace(/^https?:\/\//, '');
+  const img = path => esc(site + '/assets/img/' + path);
 
   const summary = rows.length ? `
-  <tr><td style="padding:26px 32px 0;">
-    <div style="font:700 11px/1 Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:${GREY};padding-bottom:6px;">${esc(r.summary_heading)}</div>
+  <tr><td class="px" style="padding:40px 48px 0;">
+    ${label(r.summary_heading, `padding-bottom:12px;border-bottom:1px solid ${INK};`)}
     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;">
       ${rows.map(([k, v]) => `
       <tr>
-        <td style="padding:10px 14px 10px 0;vertical-align:top;width:130px;color:${GREY};font:400 14px/1.5 Arial,sans-serif;border-bottom:1px solid ${RULE};">${esc(k)}</td>
-        <td style="padding:10px 0;vertical-align:top;color:${BLACK};font:400 15px/1.5 Arial,sans-serif;border-bottom:1px solid ${RULE};">${v.map(esc).join('<br>')}</td>
+        <td class="lbl" style="padding:15px 16px 15px 0;width:150px;vertical-align:top;border-bottom:1px solid ${HAIR};font:700 10.5px/1.75 ${FONT};letter-spacing:1.6px;text-transform:uppercase;color:${MUTED};">${esc(k)}</td>
+        <td style="padding:15px 0;vertical-align:top;border-bottom:1px solid ${HAIR};font:400 15px/1.6 ${FONT};color:${INK};">${v.map(esc).join('<br>')}</td>
       </tr>`).join('')}
     </table>
   </td></tr>` : '';
 
   const html = `<!doctype html>
-<html lang="en-GB"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light only"><title>${esc(r.subject)}</title></head>
-<body style="margin:0;padding:0;background:#f3f3f1;">
-<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${esc(r.preheader)}</div>
-<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:#f3f3f1;">
-<tr><td align="center" style="padding:28px 12px;">
-<table role="presentation" cellpadding="0" cellspacing="0" width="600" style="max-width:600px;width:100%;background:#ffffff;">
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<meta name="color-scheme" content="light only">
+<meta name="supported-color-schemes" content="light only">
+<title>${esc(r.subject)}</title>
+<style>
+  @media (max-width: 620px) {
+    .px { padding-left: 26px !important; padding-right: 26px !important; }
+    .h1 { font-size: 27px !important; }
+    .stack { display: block !important; width: 100% !important; }
+    .gap { padding-top: 20px !important; }
+    .lbl { width: 112px !important; }
+    .ref { text-align: left !important; padding-top: 8px !important; }
+  }
+  a[x-apple-data-detectors] { color: inherit !important; text-decoration: none !important; }
+</style>
+</head>
+<body style="margin:0;padding:0;background:${PAGE};">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;mso-hide:all;">${esc(r.preheader)}</div>
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background:${PAGE};">
+<tr><td align="center" style="padding:32px 12px;">
+<!--[if mso]><table role="presentation" cellpadding="0" cellspacing="0" width="600" align="center"><tr><td><![endif]-->
+<table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;max-width:600px;background:#ffffff;">
 
-  <tr><td style="padding:30px 32px 22px;">
-    <a href="${esc(SITE.domain)}" style="text-decoration:none;"><img src="${esc(SITE.domain)}/assets/img/brand/econ-logo-dark-112.png" width="52" height="56" alt="Econ Electrical" style="display:block;border:0;height:56px;width:52px;font:700 18px/1 Arial,sans-serif;color:${BLACK};"></a>
+  <tr><td align="center" bgcolor="#000000" style="background:#000000;padding:42px 24px 40px;">
+    <a href="${esc(site)}" style="text-decoration:none;"><img src="${img('brand/econ-logo-email-192.png')}" width="89" height="96" alt="Econ Electrical" style="display:block;border:0;width:89px;height:96px;color:#ffffff;font:700 16px/1 ${FONT};"></a>
   </td></tr>
-  <tr><td style="padding:0 32px;"><div style="height:3px;line-height:3px;font-size:0;background:${GREEN};">&nbsp;</div></td></tr>
+  <tr><td bgcolor="#9eca84" style="background:#9eca84;height:3px;line-height:3px;font-size:0;">&nbsp;</td></tr>
 
-  <tr><td style="padding:30px 32px 0;font:400 16px/1.6 Arial,sans-serif;color:${BLACK};">
-    <p style="margin:0 0 16px;">${esc(hello)}</p>
-    <p style="margin:0 0 16px;">${esc(r.intro)}</p>
-    <p style="margin:0;font-weight:700;">${esc(r.promise)}</p>
+  <tr><td class="px" style="padding:46px 48px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%"><tr>
+      <td class="stack" style="vertical-align:top;">${label(r.kicker)}</td>
+      <td class="stack ref" align="right" style="vertical-align:top;text-align:right;">${label('Ref ' + ref, 'letter-spacing:1.4px;')}</td>
+    </tr></table>
+    <h1 class="h1" style="margin:22px 0 0;font:400 31px/1.2 ${FONT};letter-spacing:-0.5px;color:${INK};">${esc(heading)}</h1>
+    <p style="margin:18px 0 0;font:400 15px/1.75 ${FONT};color:${BODY};">${esc(r.intro)}</p>
+    <p style="margin:10px 0 0;font:700 15px/1.75 ${FONT};color:${INK};">${esc(r.promise)}</p>
   </td></tr>
 
   ${summary}
 
-  ${r.extra ? `<tr><td style="padding:24px 32px 0;font:400 15px/1.6 Arial,sans-serif;color:${BLACK};">
-    <p style="margin:0;">${esc(r.extra)}</p>
-  </td></tr>` : ''}
+  ${r.extra ? `<tr><td class="px" style="padding:30px 48px 0;font:400 14px/1.75 ${FONT};color:${BODY};">${esc(r.extra)}</td></tr>` : ''}
 
-  <tr><td style="padding:28px 32px 0;">
-    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
-      <td style="background:${GREEN};border-radius:24px;">
-        <a href="tel:${esc(tel)}" style="display:inline-block;padding:13px 22px;font:700 15px/1 Arial,sans-serif;color:${BLACK};text-decoration:none;white-space:nowrap;">Call ${esc(SITE.phone)}</a>
+  <tr><td class="px" style="padding:38px 48px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse:collapse;border-top:1px solid ${HAIR};"><tr>
+      <td class="stack" width="55%" style="padding:24px 16px 0 0;vertical-align:top;">
+        ${label('Speak to us')}
+        <a href="tel:${esc(SITE.phone_href)}" style="display:inline-block;margin-top:8px;font:700 21px/1.3 ${FONT};color:${INK};text-decoration:none;letter-spacing:0.2px;">${esc(SITE.phone)}</a>
+        <div style="margin-top:4px;font:400 13px/1.6 ${FONT};color:${MUTED};">${esc(SITE.hours_text)}</div>
       </td>
-      <td style="padding-left:14px;font:400 13px/1.5 Arial,sans-serif;color:${GREY};">Need us sooner?<br>${esc(SITE.hours_text)}</td>
+      <td class="stack gap" width="45%" style="padding:24px 0 0;vertical-align:top;">
+        ${label('Email')}
+        <a href="mailto:${esc(SITE.email)}" style="display:inline-block;margin-top:8px;font:700 15px/1.5 ${FONT};color:${INK};text-decoration:none;">${esc(SITE.email)}</a>
+      </td>
     </tr></table>
   </td></tr>
 
-  <tr><td style="padding:32px 32px 0;font:400 15px/1.6 Arial,sans-serif;color:${BLACK};">
-    <p style="margin:0;">Thanks again,</p>
-    <p style="margin:2px 0 0;font-weight:700;">Econ Electrical</p>
+  <tr><td class="px" style="padding:42px 48px 46px;font:400 15px/1.75 ${FONT};color:${BODY};">
+    Kind regards,<br><span style="font-weight:700;color:${INK};">The Econ Electrical team</span>
   </td></tr>
 
-  <tr><td style="padding:26px 32px 30px;">
-    <div style="border-top:1px solid ${RULE};padding-top:18px;font:400 13px/1.6 Arial,sans-serif;color:${GREY};">
-      ${esc(SITE.legal)}, ${esc(SITE.address.join(', '))}<br>
-      NICEIC Approved Contractor &nbsp;&middot;&nbsp; MCS Certified &nbsp;&middot;&nbsp;
-      <a href="${esc(SITE.domain)}" style="color:${GREY};">${esc(SITE.domain.replace(/^https?:\/\//, ''))}</a>
-    </div>
+  <tr><td class="px" bgcolor="${FOOT}" style="background:${FOOT};padding:30px 48px 32px;border-top:1px solid ${HAIR};">
+    <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+      <td style="padding-right:24px;vertical-align:middle;"><img src="${img('email/logo-niceic-dark-64.png')}" width="57" height="32" alt="NICEIC Approved Contractor" style="display:block;border:0;width:57px;height:32px;"></td>
+      <td style="padding-right:24px;vertical-align:middle;"><img src="${img('email/logo-mcs-dark-64.png')}" width="83" height="32" alt="MCS Certified" style="display:block;border:0;width:83px;height:32px;"></td>
+      <td style="vertical-align:middle;"><img src="${img('email/logo-safecontractor-dark-64.png')}" width="34" height="32" alt="SafeContractor Approved" style="display:block;border:0;width:34px;height:32px;"></td>
+    </tr></table>
+    <p style="margin:20px 0 0;font:400 12px/1.8 ${FONT};color:${MUTED};">${esc(SITE.legal)}, ${esc(SITE.address.join(', '))}<br><a href="${esc(site)}" style="color:${INK};font-weight:700;text-decoration:none;">${esc(bare)}</a></p>
   </td></tr>
 
 </table>
-<p style="max-width:560px;margin:16px auto 0;font:400 12px/1.6 Arial,sans-serif;color:#8a8a8a;">
-  You are getting this because this email address was used on ${esc(SITE.domain.replace(/^https?:\/\//, ''))}. If that was not you, you can ignore it and nothing more will be sent.
-</p>
+<!--[if mso]></td></tr></table><![endif]-->
+<p style="max-width:520px;margin:20px auto 0;font:400 11px/1.7 ${FONT};color:#9a9a9a;text-align:center;">You are receiving this because this email address was used on ${esc(bare)}. If that was not you, please ignore it and nothing more will be sent.</p>
 </td></tr></table>
 </body></html>`;
 
   const text = [
-    hello, '',
-    r.intro, '',
+    r.kicker.toUpperCase() + '   Ref ' + ref, '',
+    heading, '',
+    r.intro,
     r.promise, '',
     ...(rows.length ? [r.summary_heading.toUpperCase(), ...rows.map(([k, v]) => '  ' + k + ': ' + v.join(', ')), ''] : []),
     ...(r.extra ? [r.extra, ''] : []),
-    'Need us sooner? Call ' + SITE.phone + ', ' + SITE.hours_text + '.', '',
-    'Thanks again,', 'Econ Electrical', '',
+    'Speak to us: ' + SITE.phone + ' (' + SITE.hours_text + ')',
+    'Email: ' + SITE.email, '',
+    'Kind regards,', 'The Econ Electrical team', '',
     SITE.legal + ', ' + SITE.address.join(', '),
-    'NICEIC Approved Contractor, MCS Certified', SITE.domain,
+    'NICEIC Approved Contractor, MCS Certified, SafeContractor Approved', bare,
   ].join('\n');
 
-  return { subject: r.subject, html, text };
+  return { subject: r.subject, html: longhand(html), text, ref };
 }
 
 async function send(key, body, what) {
@@ -951,7 +1024,8 @@ exports.handler = async function (event) {
   const jobs = [];
 
   /* 1. To the office. */
-  const office = buildEmail(form, data, { created_at: payload.created_at });
+  const meta = { created_at: payload.created_at, id: payload.id };
+  const office = buildEmail(form, data, meta);
   const toOffice = { from: FROM, to: cfg.to, subject: office.subject, html: office.html, text: office.text };
   /* An empty Cc is left off rather than sent as an empty list. */
   if (cfg.cc && cfg.cc.length) toOffice.cc = cfg.cc;
@@ -961,7 +1035,7 @@ exports.handler = async function (event) {
 
   /* 2. To the customer, so they know it arrived. A reply to it goes to Jonathan. */
   if (cfg.reply && validEmail(data.email)) {
-    const mail = buildReply(form, data);
+    const mail = buildReply(form, data, meta);
     jobs.push(send(key, {
       from: cfg.reply.from, to: [data.email], reply_to: cfg.reply.reply_to,
       subject: mail.subject, html: mail.html, text: mail.text,

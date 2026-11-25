@@ -1584,9 +1584,11 @@ def choice_field(f, fid):
 
     Each answer is a real radio or checkbox inside its own label, so it works with a
     keyboard, a screen reader and no script at all; the pill is only how it looks.
-    The chips post as interests[] when there is no script (Netlify keeps a [] name
-    as a list), and with script the page copies the ticks into one plain field,
-    which is what the emails read, so a list never has to survive the trip.
+    With script the page copies the ticks into one plain field (interests), which
+    is what the emails read, so a list never has to survive the trip. Without
+    script the boxes post as interests_ticked[] instead: a different name from the
+    plain field, so the two can never be read as one list and a plain value at
+    once, which some form parsers reject outright.
     """
     multi = f['type'] == 'chips'
     hint = f.get('hint') or ('optional' if f.get('optional') else '')
@@ -1605,7 +1607,7 @@ def choice_field(f, fid):
         items.append(
             '<label class="pick"><input type="%s" name="%s" value="%s"%s%s>'
             '<span>%s%s</span></label>'
-            % ('checkbox' if multi else 'radio', f['name'] + ('[]' if multi else ''), e(label),
+            % ('checkbox' if multi else 'radio', f['name'] + ('_ticked[]' if multi else ''), e(label),
                ' data-key="%s"' % key if key else '', req,
                icon('check', 'i tick'), e(label)))
     extra = ''
@@ -2334,8 +2336,9 @@ FORM_ROUTING = {
                 'subject': 'Project enquiry',
                 'reply': {'from': REPLY_FROM, 'reply_to': REPLY_TO,
                           'subject': 'Your enquiry with Econ Electrical',
+                          'kicker': 'Enquiry received',
                           'preheader': PROMISE,
-                          'intro': 'Thanks for your enquiry. It has come through safely and is with us now.',
+                          'intro': 'Your enquiry has come through safely and is with us now.',
                           'promise': PROMISE,
                           'summary_heading': 'Your enquiry',
                           'echo': [['interests', 'Interested in'], ['site_type', 'Type of site'],
@@ -2349,9 +2352,10 @@ FORM_ROUTING = {
                         'subject': 'Site assessment',
                         'reply': {'from': REPLY_FROM, 'reply_to': REPLY_TO,
                                   'subject': 'Your free site energy assessment request',
+                                  'kicker': 'Request received',
                                   'preheader': 'A member of our team will be in touch within one working day to book your site visit.',
-                                  'intro': ('Thanks for requesting a free site energy assessment. Your site '
-                                            'details have come through safely.'),
+                                  'intro': ('Your request for a free site energy assessment has come through '
+                                            'safely, along with your site details.'),
                                   'promise': 'A member of our team will be in touch within one working day to book your site visit.',
                                   'summary_heading': '', 'echo': [],
                                   'extra': ('If you did not attach a year of electricity bills, reply to this '
@@ -2362,8 +2366,9 @@ FORM_ROUTING = {
                 'subject': 'Website enquiry',
                 'reply': {'from': REPLY_FROM, 'reply_to': REPLY_TO,
                           'subject': 'Your message to Econ Electrical',
+                          'kicker': 'Message received',
                           'preheader': PROMISE,
-                          'intro': 'Thanks for getting in touch. Your message has come through safely.',
+                          'intro': 'Your message has come through safely and is with us now.',
                           'promise': PROMISE,
                           'summary_heading': '', 'echo': [],
                           'extra': 'If there is anything you would like to add, just reply to this email.'}},
@@ -2422,7 +2427,7 @@ def write_function():
             if not any(f['name'] == field for _h, fs in cfg['fields'] for f in fs):
                 raise SystemExit('%s echoes a field it does not have: %s' % (name, field))
 
-    site = {k: SITE[k] for k in ('domain', 'legal', 'phone', 'phone_href', 'hours_text', 'address')}
+    site = {k: SITE[k] for k in ('domain', 'legal', 'phone', 'phone_href', 'email', 'hours_text', 'address')}
     src = open(os.path.join(HERE, 'function', 'submission-created.js')).read()
     src = src.replace('__FORMS__', json.dumps(forms, indent=2, ensure_ascii=False))
     src = src.replace('__SITE__', json.dumps(site, indent=2, ensure_ascii=False))
