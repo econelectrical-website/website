@@ -1,10 +1,10 @@
 # Short addresses for print, signage and QR codes
-/solar  /home-solar-battery-installation/  301
-/commercial-solar  /commercial-solar-pv-installation/  301
-/ev  /commercial-ev-charging-installation/  301
-/eicr  /eicr-fixed-wire-testing/  301
-/led  /commercial-led-lighting/  301
-/industrial  /industrial-electrical-contractors/  301
+/solar  /home-solar-battery-installation/?via=solar  301
+/commercial-solar  /commercial-solar-pv-installation/?via=commercial-solar  301
+/ev  /commercial-ev-charging-installation/?via=ev  301
+/eicr  /eicr-fixed-wire-testing/?via=eicr  301
+/led  /commercial-led-lighting/?via=led  301
+/industrial  /industrial-electrical-contractors/?via=industrial  301
 /projects/all  /projects/  301
 /projects/all/  /projects/  301
 

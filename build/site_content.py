@@ -786,7 +786,7 @@ We provide lighting surveys, design and installation for schools, academies and 
 
 # Privacy notice. A standard notice for a small business website; worth a quick check that it matches how the business works.
 PRIVACY = {
-    'updated': '2026-10-13',
+    'updated': '2026-11-25',
     'lede': 'How Econ Electrical Ltd collects and uses personal information through this website and when you contact us.',
     'body': '''
 ## Who We Are
@@ -795,9 +795,10 @@ Econ Electrical Ltd is responsible for the personal information described in thi
 
 ## The Information We Collect
 
-- **Enquiries:** when you use our contact form, we collect your name, company, email address, phone number and message.
+- **Enquiries:** when you use one of our forms, we collect your name, company, email address, phone number, the details of your project and your message.
 - **Emails, calls and messages:** when you contact us directly, including by WhatsApp, we keep the details you give us.
 - **Website analytics:** if you accept analytics cookies, Google Analytics collects information about how you use the site, such as the pages you visit, how long you stay and the type of device you use.
+- **Visit counts:** we also keep an anonymous count of the pages people visit, the website or search they arrived from, and clicks on things like our phone number and enquiry buttons, so we can see which parts of the site are useful. It uses no cookies and does not record your IP address or anything else that identifies you. If you choose Decline in Cookie Settings, or your browser asks websites not to track you, your visits are not counted.
 
 ## How We Use It
 
@@ -809,7 +810,8 @@ We never sell your information, and we do not use it for marketing unless you ha
 
 We use trusted providers to run our website and communications:
 
-- **Netlify**, which hosts this website and processes our contact form
+- **Netlify**, which hosts this website, processes our forms and keeps our anonymous visit counts
+- **Resend**, which sends the confirmation email you receive after using one of our forms
 - **Microsoft**, which provides our email
 - **Google**, which provides website analytics if you accept analytics cookies, and the map on our contact page
 - **WhatsApp**, if you choose to message us that way

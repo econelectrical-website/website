@@ -1,0 +1,11 @@
+{
+  "name": "econelectrical-website",
+  "private": true,
+  "description": "The pages are built on a laptop and committed to site/. This file only lists what the Netlify functions need.",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.11"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

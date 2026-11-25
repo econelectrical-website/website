@@ -603,6 +603,9 @@ def document(ctx, meta, body, preview_main=False):
     for block in blocks:
         head.append('<script type="application/ld+json">%s</script>' % json.dumps(block, ensure_ascii=False))
     if ctx.mode == 'site':
+        # Where the page script sends its anonymous visit and click notes (see the
+        # visit counter in function/visit-counter.mjs). The preview has no counter.
+        head.append('<meta name="econ-count" content="%s">' % COUNTER_PATH)
         # Google Analytics only loads once the visitor has accepted cookies (see the cookie bar in site.js)
         head.append(("<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}"
                      "window.econAnalytics=function(){if(window.__econGA)return;window.__econGA=1;"
@@ -2294,6 +2297,12 @@ def copy_assets(out, mode):
     shutil.copy(os.path.join(HERE, 'static', 'site.js'), os.path.join(out, 'assets', 'site.js'))
 
 
+# Each page's short title, by address, filled in as the real site is built. The
+# weekly review uses these so it can say "Home Solar and Battery" rather than an
+# address.
+PAGE_TITLES = {}
+
+
 def build(mode):
     out = os.path.join(HERE, 'dist', mode)
     if os.path.exists(out):
@@ -2307,6 +2316,8 @@ def build(mode):
         target = os.path.join(out, 'index.html') if path == '/' else os.path.join(out, path.strip('/'), 'index.html')
         write(target, doc)
         paths.append((path, meta.get('noindex'), meta.get('lastmod')))
+        if mode == 'site':
+            PAGE_TITLES[path] = 'Home page' if path == '/' else meta['title'].split(' | ')[0].strip()
     if mode == 'site':
         ctx = Ctx(mode, '/404.html')
         meta, body = page_simple(ctx, '/404.html', 'Error 404', 'Page Not Found',
@@ -2374,6 +2385,25 @@ FORM_ROUTING = {
                           'extra': 'If there is anything you would like to add, just reply to this email.'}},
 }
 
+# The weekly website review: who it goes to, who it comes from, and the first
+# week it covers (counting starts the week before, so earlier weeks are empty
+# and are never sent). The counter's address is deliberately dull, so privacy
+# blockers that stop anything called "track" or "analytics" leave it alone.
+COUNTER_PATH = '/api/n'
+# Where a page's own title would read oddly in the review, it gets a plainer name.
+REVIEW_PAGE_NAMES = {
+    '/contact-us-wakefield-electricians/': 'Contact page',
+    '/projects/': 'Projects',
+    '/blog/': 'News and advice',
+    '/enquire/': 'Project enquiry form',
+    '/enquiry-received/': 'Enquiry sent (thank you page)',
+    '/thank-you/': 'Message sent (thank you page)',
+    '/free-site-energy-assessment/thank-you/': 'Assessment requested (thank you page)',
+}
+REVIEW = {'to': ['jonathan@econelectrical.co.uk'],
+          'from': 'Econ Electrical Website <website@econelectrical.co.uk>',
+          'first_end': '2026-11-26'}
+
 # The contact form is written inline in page_contact rather than as data, so its
 # labels are listed here. Short enough that a mismatch would be obvious; the
 # check below fails the build if one creeps in.
@@ -2433,6 +2463,21 @@ def write_function():
     src = src.replace('__SITE__', json.dumps(site, indent=2, ensure_ascii=False))
     write(os.path.join(HERE, 'dist', 'functions', 'submission-created.js'), src)
 
+    # The visit counter and the Friday review share the review code, which is
+    # written into both rather than imported, so each function stands alone.
+    review = dict(REVIEW, site=site, titles=dict(PAGE_TITLES, **REVIEW_PAGE_NAMES))
+    lib = open(os.path.join(HERE, 'function', 'review-lib.mjs')).read()
+    lib = lib.replace('__REVIEW__', json.dumps(review, indent=2, ensure_ascii=False))
+    pages = sorted(PAGE_TITLES)
+    for name in ('visit-counter.mjs', 'weekly-review.mjs'):
+        src = open(os.path.join(HERE, 'function', name)).read()
+        if name == 'visit-counter.mjs' and "path: '%s'" % COUNTER_PATH not in src:
+            raise SystemExit('visit-counter.mjs does not listen on %s' % COUNTER_PATH)
+        assert '// __REVIEW_LIB__' in src, name
+        src = src.replace('// __REVIEW_LIB__', lib)
+        src = src.replace('__PAGES__', json.dumps(pages))
+        write(os.path.join(HERE, 'dist', 'functions', name), src)
+
 
 def write_site_extras(out, paths):
     urls = ''.join('  <url><loc>%s%s</loc>%s</url>\n' % (SITE['domain'], p, '<lastmod>%s</lastmod>' % lastmod if lastmod else '')
@@ -2442,13 +2487,15 @@ def write_site_extras(out, paths):
     write(os.path.join(out, 'robots.txt'), 'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' % SITE['domain'])
     # Short addresses for print, signage and QR codes. The roadside banner's QR
     # points at /solar, so this block is load bearing once anything is printed.
+    # Each one adds ?via= so the weekly review can count visits from QR codes and
+    # print; the page itself ignores it and its canonical address stays clean.
     redirects = ['# Short addresses for print, signage and QR codes',
-                 '/solar  /home-solar-battery-installation/  301',
-                 '/commercial-solar  /commercial-solar-pv-installation/  301',
-                 '/ev  /commercial-ev-charging-installation/  301',
-                 '/eicr  /eicr-fixed-wire-testing/  301',
-                 '/led  /commercial-led-lighting/  301',
-                 '/industrial  /industrial-electrical-contractors/  301',
+                 '/solar  /home-solar-battery-installation/?via=solar  301',
+                 '/commercial-solar  /commercial-solar-pv-installation/?via=commercial-solar  301',
+                 '/ev  /commercial-ev-charging-installation/?via=ev  301',
+                 '/eicr  /eicr-fixed-wire-testing/?via=eicr  301',
+                 '/led  /commercial-led-lighting/?via=led  301',
+                 '/industrial  /industrial-electrical-contractors/?via=industrial  301',
                  # The full list used to be its own page before it was folded into
                  # /projects/. Nothing should still point here, but the address was
                  # live in the preview and costs one line to keep working.

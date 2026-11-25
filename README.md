@@ -7,7 +7,8 @@ by Netlify, with no framework and no database.
 
 Netlify watches this repository. Push to `main` and the contents of `site/` go live at
 econelectrical.co.uk within a minute or so. There is no build step on Netlify: the
-finished pages are committed here, so there is nothing that can fail during a deploy.
+finished pages are committed here. The only thing Netlify does is install the one npm
+package the functions use (see below) and bundle the functions.
 
 That is deliberate. Building here, where the fonts, the image library and ffmpeg all
 exist, and committing the result, is far more reliable than asking a build server to
@@ -80,8 +81,29 @@ from the live site once, after the original export was lost. The camera original
 the two project videos are much larger and are not in this repository; Jonathan has
 them.
 
+## Functions
+
+`netlify/functions` is written by `build.py` from the templates in `build/function`,
+with the form questions, page addresses and page titles filled in. Edit the templates,
+never the copies.
+
+- `submission-created.js` runs on every verified form submission. It emails the
+  submission to Jonathan, sends the customer an instant confirmation through Resend
+  (`RESEND_API_KEY` is set in Netlify, never in this repository), and keeps a short
+  note of the enquiry for the weekly review.
+- `visit-counter.mjs` answers `/api/n`. The page script sends it an anonymous note
+  when a page opens and when someone clicks the phone number, WhatsApp, email, an
+  enquiry button, an accreditation logo or a link to another site, or starts or sends a
+  form. It keeps one tally per day in the `site-stats` Netlify Blobs store. No cookies,
+  no IP addresses; visitors who decline cookies or whose browser sends Do Not Track or
+  Global Privacy Control are not counted. Deploy previews count into `site-stats-test`.
+- `weekly-review.mjs` emails Jonathan the week's numbers every Friday at 7am UTC.
+  Pressing Run now on it in Netlify sends a test copy of the last seven days. If the
+  schedule ever fails to fire, the visit counter sends the review two hours late.
+
 ## Short addresses
 
 `build.py` writes `_redirects`, which includes short addresses used in print. `/solar`
 is on a roadside banner's QR code, so that one is load bearing. Check `_redirects`
-before removing anything that looks unused.
+before removing anything that looks unused. Each short address adds `?via=` to the page
+it lands on, which is how the weekly review counts visits from QR codes and print.

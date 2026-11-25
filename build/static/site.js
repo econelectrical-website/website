@@ -549,4 +549,87 @@
       else fallback();
     });
   });
+
+  /* Visit counting for the Friday website review.
+     On the live site each page sends one short note when it opens (which page,
+     and the website, search or advert the visitor arrived from) and another when
+     someone clicks one of a handful of things: the phone number, WhatsApp, email,
+     an enquiry button, an accreditation logo, a link to another site, or starts
+     or sends a form. Nothing is stored on the device and nothing that identifies
+     the visitor is sent. Anyone who chose Decline on the cookie bar, or whose
+     browser asks sites not to track it, is not counted. When Google Analytics has
+     been accepted, the same clicks are passed to it as well. */
+  (function () {
+    var meta = document.querySelector('meta[name="econ-count"]');
+    if (!meta) return;
+    var endpoint = meta.getAttribute('content');
+    var nav = window.navigator;
+    if (nav.globalPrivacyControl === true || nav.doNotTrack === '1' || window.doNotTrack === '1') return;
+    function note(data) {
+      if (readConsent() === 'denied') return;
+      var body = JSON.stringify(data);
+      try { if (nav.sendBeacon && nav.sendBeacon(endpoint, body)) return; } catch (err) {}
+      try { window.fetch(endpoint, { method: 'POST', body: body, keepalive: true, credentials: 'omit' }); } catch (err) {}
+    }
+    function ga(name, params) {
+      if (window.__econGA && typeof window.gtag === 'function') window.gtag('event', name, params);
+    }
+    var path = location.pathname;
+
+    var tag = '';
+    try {
+      var q = new URLSearchParams(location.search);
+      if (q.get('gclid') || q.get('gbraid') || q.get('wbraid') || q.get('gad_source')) tag = 'google-ads';
+      else if (q.get('msclkid')) tag = 'bing-ads';
+      else if (q.get('via')) tag = 'short:' + q.get('via');
+      else if (q.get('utm_source')) tag = q.get('utm_source');
+      else if (q.get('fbclid')) tag = 'facebook';
+    } catch (err) {}
+    var from = '', arrived = true;
+    try {
+      if (document.referrer) {
+        var r = new URL(document.referrer);
+        if (r.host === location.host) arrived = false; else from = r.hostname;
+      }
+    } catch (err) {}
+    note({ e: 'view', p: path, r: from, s: tag, l: arrived ? 1 : 0 });
+
+    var PAGES = { '/enquire/': 'enquire', '/free-site-energy-assessment/': 'assessment', '/contact-us-wakefield-electricians/': 'contact' };
+    document.addEventListener('click', function (ev) {
+      var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
+      if (!a) return;
+      var href = a.getAttribute('href') || '';
+      var kind = '', target = '';
+      if (/^tel:/i.test(href)) kind = 'call';
+      else if (/^mailto:/i.test(href)) kind = 'email';
+      else {
+        var u;
+        try { u = new URL(a.href, location.href); } catch (err) { return; }
+        if (/(^|\.)wa\.me$|(^|\.)whatsapp\.com$/i.test(u.hostname)) kind = 'whatsapp';
+        else if (u.host === location.host) { kind = PAGES[u.pathname] || ''; if (!kind || u.pathname === path) return; }
+        else if (/^https?:$/.test(u.protocol)) {
+          kind = a.classList.contains('logo-tile') || a.classList.contains('logo-link') ? 'verify' : 'outbound';
+          target = u.hostname;
+        } else return;
+      }
+      note({ e: 'click', k: kind, p: path, x: target });
+      ga('click_' + kind, { link_url: a.href, page_path: path });
+    }, true);
+
+    document.querySelectorAll('form[name]').forEach(function (form) {
+      var name = form.getAttribute('name');
+      var started = false;
+      function start() {
+        if (started) return;
+        started = true;
+        note({ e: 'form', k: 'start', f: name, p: path });
+      }
+      form.addEventListener('input', start, true);
+      form.addEventListener('change', start, true);
+      form.addEventListener('submit', function () {
+        note({ e: 'form', k: 'send', f: name, p: path });
+        ga('generate_lead', { form_name: name, page_path: path });
+      });
+    });
+  })();
 })();

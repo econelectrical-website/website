@@ -451,6 +451,51 @@ function buildReply(form, data, meta) {
   return { subject: r.subject, html: longhand(html), text, ref };
 }
 
+/* A short note of each form sent, for the Friday website review: which form,
+   who (the company, and the name given), what it was about and how live it is.
+   Only answers the form itself offers are kept, plus the name, company and
+   postcode, and the review deletes these notes after 120 days. If storage is not
+   available the emails still go; this only logs. */
+function londonDay(iso) {
+  let d = iso ? new Date(iso) : new Date();
+  if (isNaN(d)) d = new Date();
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit',
+  }).formatToParts(d);
+  const get = t => (parts.find(p => p.type === t) || {}).value || '';
+  return get('year') + '-' + get('month') + '-' + get('day');
+}
+
+async function remember(event, form, data, meta) {
+  try {
+    const { getStore, connectLambda } = require('@netlify/blobs');
+    connectLambda(event);
+    const cfg = FORMS[form];
+    const byName = {};
+    for (const [, fields] of cfg.fields) for (const f of fields) byName[f.name] = f;
+    const pick = name => {
+      const f = byName[name];
+      if (!f || data[name] == null || data[name] === '') return [];
+      return allowed(f, f.type === 'chips' ? listOf(data, name) : data[name]);
+    };
+    const short = v => String(v || '').replace(/\s+/g, ' ').trim().slice(0, 80);
+    const about = form === 'enquiry' ? pick('interests')
+      : form === 'site-assessment' ? ['Free site energy assessment', ...pick('sector')] : ['General message'];
+    const note = {
+      form, at: meta.created_at || new Date().toISOString(), ref: reference(meta),
+      who: short(data.company || data.business || data.name),
+      name: short(data.name),
+      about,
+      stage: pick('stage')[0] || '',
+      place: short(data.location || data.postcode).toUpperCase().slice(0, 12),
+    };
+    const store = getStore('site-stats');
+    await store.setJSON('lead/' + londonDay(meta.created_at) + '/' + note.ref, note);
+  } catch (err) {
+    console.error('submission-created: could not note the enquiry for the weekly review:', err && err.message);
+  }
+}
+
 async function send(key, body, what) {
   try {
     const res = await fetch('https://api.resend.com/emails', {
@@ -484,18 +529,21 @@ exports.handler = async function (event) {
     return { statusCode: 200, body: 'unknown form' };
   }
 
+  const data = payload.data || {};
+  const meta = { created_at: payload.created_at, id: payload.id };
+  const noted = remember(event, form, data, meta);
+
   const key = process.env.RESEND_API_KEY;
   if (!key) {
     console.error('submission-created: RESEND_API_KEY is not set, no email sent. '
                   + 'The submission is still saved in Netlify.');
+    await noted;
     return { statusCode: 200, body: 'no key' };
   }
 
-  const data = payload.data || {};
-  const jobs = [];
+  const jobs = [noted];
 
   /* 1. To the office. */
-  const meta = { created_at: payload.created_at, id: payload.id };
   const office = buildEmail(form, data, meta);
   const toOffice = { from: FROM, to: cfg.to, subject: office.subject, html: office.html, text: office.text };
   /* An empty Cc is left off rather than sent as an empty list. */

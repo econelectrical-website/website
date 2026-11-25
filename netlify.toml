@@ -2,7 +2,10 @@
 #
 # The site is pre-built: build/build.py renders it on a laptop and the finished
 # pages are committed to site/, so there is no build command to run here. The
-# only thing Netlify compiles is the function below.
+# only things Netlify prepares are the functions in netlify/functions: the form
+# emails, the visit counter and the Friday website review. The last two keep
+# their numbers in Netlify Blobs, which is the one npm package in package.json,
+# and that package needs Node 22.
 #
 # A copy of the header rules also lives in site/netlify.toml, written by the
 # build, so that a drag and drop deploy of that folder on its own still gets
@@ -11,6 +14,9 @@
 [build]
   publish = "site"
   functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "22"
 
 [[headers]]
   for = "/*"

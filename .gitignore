@@ -5,3 +5,6 @@ __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+
+# Installed by Netlify for the functions; never committed
+node_modules/
