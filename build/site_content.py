@@ -29,9 +29,11 @@ SITE = {
 }
 
 ABOUT_PARAS = [
-    'Based in Wakefield with a nationwide reach, Econ Electrical provides expert electrical contracting for commercial and industrial projects across the UK. As a NICEIC Approved and SafeContractor accredited firm, we deliver high quality installations where safety and compliance are at the core of everything we do.',
-    'While we remain proud of our Yorkshire roots, we have expanded to meet the growing demand for large scale projects throughout the country, with a specialist focus on Solar PV and EV Charging infrastructure. Our expertise covers everything from industrial fit outs and machine moves to comprehensive EICR testing and reactive maintenance.',
-    'Our team is committed to the latest industry practices, ensuring that whether we are working in a factory, workshop, or office, we operate with professionalism and minimal disruption. From initial advice to full project delivery, Econ Electrical is your trusted partner for efficient and future proof electrical systems.',
+    # The founding story, in Jonathan's own words as far as possible (25 Nov 2026).
+    # The home page shows the first two paragraphs, the About page all three.
+    'Econ Electrical was started in Wakefield, West Yorkshire, by Jonathan Scott and Robert Corrie. Before Econ, the two of us spent years working side by side on industrial sites. We could see the way the industry was heading, and we knew we could give clients a better service ourselves, so we set up on our own.',
+    'Our first clients came from the network we had built up over those years, and Econ has grown from there. Wakefield is still home, but our work now takes us from Scotland down to London and Reading, with a specialist focus on solar PV, battery storage and EV charging alongside industrial installation, testing and maintenance.',
+    'That is still the idea behind every job we take on: a better service, from people who know industrial sites inside out. We are NICEIC Approved, MCS certified and SafeContractor accredited, and whether we are working in a factory, a warehouse or an office, we work safely, tidily and with as little disruption to your business as possible.',
 ]
 
 HOME = {

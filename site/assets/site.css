@@ -121,7 +121,9 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
 .site-header.is-scrolled .topbar { height: 0; opacity: 0; border-color: transparent; }
 .site-header.is-scrolled .mainbar, .site-header.has-open .mainbar { background: rgba(6, 7, 6, 0.86); -webkit-backdrop-filter: saturate(1.4) blur(18px); backdrop-filter: saturate(1.4) blur(18px); border-bottom-color: var(--line); }
 .brand { flex: none; line-height: 0; }
-.brand img { height: 56px; width: auto; }
+/* The logo is a stacked mark, so the words under the icon only read at a decent height.
+   72px sits inside the 84px bar with 6px either side. */
+.brand img { height: 72px; width: auto; }
 .nav { margin-left: auto; }
 .nav-list { display: flex; align-items: center; gap: 4px; list-style: none; margin: 0; padding: 0; }
 .nav-link { position: relative; display: inline-flex; align-items: center; gap: 6px; height: var(--header-h); padding: 0 14px; font: 600 0.95rem/1 var(--body); color: rgba(255, 255, 255, 0.86); text-decoration: none; background: none; border: 0; cursor: pointer; }
@@ -139,7 +141,12 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
 }
 .nav-item.open > .mega { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
 @media (hover: hover) and (min-width: 1101px) {
-  .nav-item.has-mega:hover > .mega, .nav-item.has-mega:focus-within > .mega { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  /* Keyboard focus keeps a panel open while tabbing through it; a mouse click's focus
+     does not, or the panel stays pinned after the pointer has left. */
+  .nav-item.has-mega:hover > .mega, .nav-item.has-mega:has(:focus-visible) > .mega { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+  /* Set by the script when the page scrolls under an open menu; cleared when the pointer
+     returns to a menu heading. */
+  .site-header.menus-quiet .nav-item.has-mega:not(.open) > .mega { opacity: 0; visibility: hidden; transform: translateY(-10px); }
   .nav-item.has-mega:hover > .nav-link::after { transform: scaleX(1); }
 }
 .mega-inner { display: grid; gap: 20px; padding-block: 28px 34px; }
@@ -184,7 +191,7 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
   :root { --topbar-h: 0px; }
   .nav { display: none; }
   .header-actions { margin-left: auto; }
-  .brand img { height: 50px; }
+  .brand img { height: 62px; }
   .menu-toggle { display: inline-flex; align-items: center; gap: 10px; height: 46px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, 0.05); color: var(--white); font: 700 0.8rem/1 var(--body); letter-spacing: 0.14em; text-transform: uppercase; cursor: pointer; }
   .menu-toggle .bars { position: relative; width: 18px; height: 12px; }
   .menu-toggle .bars span, .menu-toggle .bars::before, .menu-toggle .bars::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; border-radius: 2px; background: currentColor; transition: transform .35s var(--ease), opacity .2s; }
@@ -216,7 +223,7 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
 @keyframes menuIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 @media (max-width: 560px) {
   .header-actions .btn-sm { display: none; }
-  .brand img { height: 46px; }
+  .brand img { height: 56px; }
 }
 
 /* Home hero */
@@ -412,7 +419,17 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
 .logo-tiles { display: grid; grid-template-columns: repeat(var(--n, 3), minmax(0, 1fr)); gap: 16px; }
 .logo-tile { display: grid; place-items: center; height: 128px; padding: 26px; border-radius: var(--r); border: 1px solid var(--line); background: rgba(255, 255, 255, 0.02); transition: border-color .35s, background-color .35s; }
 .logo-tile:hover { border-color: var(--line-2); background: rgba(255, 255, 255, 0.045); }
-.logo-tile img { max-height: 54px; max-width: 100%; width: auto; opacity: 0.9; }
+.logo-tile img { max-height: 54px; max-width: 100%; width: auto; opacity: 0.9; transition: opacity .35s; }
+/* Every logo tile is a link: the accreditations open our own entry on the scheme's
+   register (tagged "Verify"), the partners open the maker's UK site. */
+a.logo-tile { position: relative; text-decoration: none; }
+a.logo-tile:hover img, a.logo-tile:focus-visible img { opacity: 1; }
+.logo-tag { position: absolute; top: 11px; right: 12px; display: inline-flex; align-items: center; gap: 5px; font: 700 0.6rem/1 var(--body); letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); opacity: 0.75; transition: opacity .35s, color .35s; }
+.logo-tag .i { width: 13px; height: 13px; }
+a.logo-tile:hover .logo-tag, a.logo-tile:focus-visible .logo-tag { opacity: 1; color: var(--sage); }
+.logo-link { display: inline-flex; }
+.logo-link img { transition: opacity .3s; }
+.logo-link:hover img, .logo-link:focus-visible img { opacity: 1; }
 @media (max-width: 900px) { .logo-groups { grid-template-columns: minmax(0, 1fr); } .logo-tile { height: 104px; } }
 @media (max-width: 480px) { .logo-tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } .logo-tiles > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
 
@@ -625,6 +642,9 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
 .select-wrap select:focus { outline: none; border-color: var(--sage);
   background: rgba(158, 202, 132, 0.05); box-shadow: 0 0 0 4px rgba(158, 202, 132, 0.14); }
 .select-wrap select:invalid { color: rgba(255, 255, 255, 0.35); }
+/* An optional drop down is never invalid, so its "Choose one" needs its own rule
+   to look like a prompt rather than an answer. */
+.select-wrap select:has(option[value=""]:checked) { color: rgba(255, 255, 255, 0.35); }
 /* The menu itself is drawn by the operating system, so its colours have to be set
    on the options or a dark theme renders white text on white. */
 .select-wrap select option { background: #141614; color: #fff; }
@@ -662,6 +682,76 @@ a.chip:hover { border-color: var(--sage); background: rgba(158, 202, 132, 0.12);
 /* Hidden until someone says they lease. Owner occupiers never see two questions that
    do not apply to them, and a tenant gets asked the thing that decides the job. */
 .lease-only[hidden] { display: none; }
+
+/* ---- Project enquiry ------------------------------------------------------
+   Questions answered by tapping a pill. Each pill is a real radio or checkbox
+   inside its label, hidden but still focusable, so a keyboard and a screen
+   reader get an ordinary form. The legend floats for the same reason as the
+   assessment's group legends: inside a grid it would otherwise sit on top of
+   the first row. */
+.page-hero.compact { min-height: clamp(400px, 50vh, 540px); }
+fieldset.choice { display: block; border: 0; padding: 0; margin: 0; min-width: 0; }
+.choice legend { float: left; width: 100%; padding: 0; margin: 0 0 12px; font: 700 0.76rem/1.35 var(--body);
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--text); }
+.choice legend .opt { text-transform: none; letter-spacing: 0; color: var(--muted); font-weight: 500; }
+.picks { clear: both; display: flex; flex-wrap: wrap; gap: 10px; }
+.field label.pick { position: relative; display: inline-flex; cursor: pointer; font: inherit; letter-spacing: 0;
+  text-transform: none; color: inherit; }
+.pick input { position: absolute; left: 14px; top: 50%; width: 1px; height: 1px; min-height: 0; padding: 0; border: 0; opacity: 0; margin: 0; }
+.pick > span { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 11px 18px;
+  border-radius: 999px; border: 1px solid var(--line-2); background: rgba(255, 255, 255, 0.03);
+  color: var(--text); font: 500 0.95rem/1.25 var(--body);
+  transition: border-color .25s, background-color .25s, color .25s; }
+.pick .tick { width: 15px; height: 15px; margin-left: -3px; color: var(--sage); display: none; flex: none; }
+.pick:hover > span { border-color: rgba(158, 202, 132, 0.55); }
+.pick input:checked + span { border-color: var(--sage); background: rgba(158, 202, 132, 0.14); color: var(--white); }
+.pick input:checked + span .tick { display: block; }
+.pick input:focus-visible + span { box-shadow: 0 0 0 4px rgba(158, 202, 132, 0.22); }
+
+.enq-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 360px); gap: 28px; align-items: start; }
+.enq-section { padding-top: clamp(48px, 6vw, 80px); }
+.enq-form { gap: 38px; }
+.enq-group > legend { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.enq-n { width: 30px; height: 30px; border-radius: 50%; display: inline-grid; place-items: center; flex: none;
+  border: 1px solid rgba(158, 202, 132, 0.45); background: rgba(158, 202, 132, 0.1);
+  color: var(--sage); font: 700 0.86rem/1 var(--body); letter-spacing: 0; }
+.enq-group .assess-fields { gap: 24px 18px; }
+.enq-aside { position: sticky; top: calc(var(--header-h) + 28px); display: grid; gap: 18px; }
+.enq-next { gap: 14px; }
+.enq-steps { list-style: none; margin: 4px 0 0; padding: 0; display: grid; counter-reset: enq; }
+.enq-steps li { position: relative; padding: 0 0 20px 40px; counter-increment: enq; }
+.enq-steps li::before { content: counter(enq); position: absolute; left: 0; top: 0; width: 26px; height: 26px;
+  border-radius: 50%; display: grid; place-items: center; background: var(--sage); color: var(--ink);
+  font: 700 0.8rem/1 var(--body); }
+.enq-steps li:not(:last-child)::after { content: ""; position: absolute; left: 12.5px; top: 32px; bottom: 6px;
+  width: 1px; background: var(--line-2); }
+.enq-steps li:last-child { padding-bottom: 0; }
+.enq-steps .when { display: block; font: 700 0.74rem/1.3 var(--body); letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--white); margin: 4px 0 6px; }
+.enq-steps p { margin: 0; color: var(--muted); font-size: 0.93rem; line-height: 1.55; }
+.enq-talk .h-sm { margin-bottom: 4px; }
+.enq-talk .info-row { padding: 16px 0; }
+
+/* On the contact page: a pointer to the enquiry form for anyone with a project. */
+.enq-link { display: flex; align-items: center; gap: 16px; padding: 16px 18px; border-radius: 16px;
+  border: 1px solid rgba(158, 202, 132, 0.3); background: rgba(158, 202, 132, 0.06); color: var(--white);
+  text-decoration: none; transition: border-color .3s, background-color .3s; }
+.enq-link:hover { border-color: rgba(158, 202, 132, 0.65); background: rgba(158, 202, 132, 0.1); }
+.enq-link .ico-box { width: 44px; height: 44px; border-radius: 12px; flex: none; }
+.enq-link b { display: block; font: 600 1.02rem/1.3 var(--display); }
+.enq-link small { display: block; color: var(--muted); font-size: 0.9rem; line-height: 1.45; margin-top: 3px; }
+.enq-link > svg { width: 18px; height: 18px; flex: none; margin-left: auto; color: var(--sage); transition: translate .25s; }
+.enq-link:hover > svg { translate: 4px 0; }
+
+@media (max-width: 1100px) {
+  .enq-grid { grid-template-columns: minmax(0, 1fr); }
+  .enq-aside { position: static; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+}
+@media (max-width: 760px) {
+  .enq-aside { grid-template-columns: minmax(0, 1fr); }
+  .pick > span { min-height: 44px; padding: 10px 15px; font-size: 0.92rem; }
+  .picks { gap: 8px; }
+}
 
 .rep-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 30px; }
 .rep-card { padding: 28px; border-radius: var(--r-lg); border: 1px solid var(--line);

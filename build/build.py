@@ -18,6 +18,7 @@ from PIL import Image
 
 from illustration import home_energy_svg
 import assessment as ASSESS
+import enquiry as ENQ
 from landing_pages import LANDING, LANDING_ORDER, OFFER_LINKS, PROJECT_SERVICE, RESIDENTIAL
 from site_content import (ABOUT_PARAS, AREAS, CATEGORIES, CTA_DEFAULT, FEATURED_PROJECTS, HOME, POSTS, PRIVACY,
                           PROJECT_ORDER, PROJECTS, RETIRED_POSTS, SERVICE_ORDER, SERVICES, SITE, TEAM)
@@ -34,6 +35,13 @@ FONTS = 'https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&family=O
 GMAP = ('https://www.google.com/maps?q=Econ%20Electrical%2C%20The%20Courtyard%2C%20225%20Denby%20Dale%20Road%2C'
         '%20Wakefield%20WF2%207AJ&z=15&output=embed')
 CONTACT = '/contact-us-wakefield-electricians/'
+
+# Whether the instant confirmation email to the customer is switched on. It needs
+# the Resend account and its key in Netlify; until both are in place and a test
+# has landed, this stays False and no page promises an email that never comes.
+# Flip it to True, rebuild and deploy, and every thank you page and the enquiry
+# page start saying "check your inbox".
+AUTO_REPLY = False
 
 # ---------------------------------------------------------------- design data
 SERVICE_ICON = {'electrical-installation': 'zap', 'renewables': 'sun', 'compliance': 'shield-check'}
@@ -169,6 +177,44 @@ def logo_img(ctx, key, alt):
         ctx.a(v['path']), v['w'], v['h'], e(alt))
 
 
+# Where each logo goes when clicked. NICEIC and MCS open Econ's own entry on that
+# scheme's public register, so a visitor can check the claim for themselves (both
+# found by searching the registers for "Econ Electrical" in November 2026; the MCS
+# entry is certification number NIC-200313). SafeContractor has no public register
+# to point at, so it opens the scheme's own site, as do the two partner logos.
+# The third field says whether the link proves Econ's own listing.
+LOGO_LINKS = {
+    'logo-niceic': ('https://niceic.com/certified-business/econ-electrical-ltd-64f/',
+                    'Econ Electrical on the NICEIC register', True),
+    'logo-mcs': ('https://mcscertified.com/find-an-installer/econ-electrical-ltd/',
+                 'Econ Electrical on the MCS installer register', True),
+    'logo-safecontractor': ('https://www.safecontractor.com/en-gb/', 'SafeContractor', False),
+    'logo-solax': ('https://uk.solaxpower.com/', 'SolaX Power UK', False),
+    'logo-schneider': ('https://www.se.com/uk/en/', 'Schneider Electric UK', False),
+}
+
+
+def logo_link(ctx, key, alt):
+    """A small logo (footer or a row of logos) that opens its scheme or maker in a new tab."""
+    href, label, _ = LOGO_LINKS[key]
+    return ext(href, logo_img(ctx, key, alt), 'logo-link', label + ', opens in a new tab')
+
+
+def logo_row(ctx, keys, cls='mini-logos'):
+    names = {'logo-niceic': 'NICEIC Approved Contractor', 'logo-mcs': 'MCS certified',
+             'logo-safecontractor': 'SafeContractor approved', 'logo-solax': 'SolaX Power',
+             'logo-schneider': 'Schneider Electric'}
+    return '<div class="%s">%s</div>' % (cls, ''.join(logo_link(ctx, k, names[k]) for k in keys))
+
+
+def logo_tile(ctx, key, alt):
+    """A large logo tile. Register links carry a 'Verify' tag so people know the
+    click proves our listing rather than just opening the scheme's home page."""
+    href, label, verify = LOGO_LINKS[key]
+    tag = '<span class="logo-tag">%s%s</span>' % ('Verify' if verify else '', icon('arrow-up-right'))
+    return ext(href, logo_img(ctx, key, alt) + tag, 'logo-tile', label + ', opens in a new tab')
+
+
 def full_src(ctx, key):
     return ctx.a(MANIFEST['images'][key]['variants'][-1]['path'])
 
@@ -279,6 +325,16 @@ def brand_logo(ctx, height, cls=''):
 def ext(href, inner, cls='', label=None):
     return '<a%s href="%s" target="_blank" rel="noopener"%s>%s</a>' % (
         ' class="%s"' % cls if cls else '', e(href), ' aria-label="%s"' % e(label) if label else '', inner)
+
+
+def enquire_href(ctx, key=None):
+    """Where an "Enquire Now" style button goes: the project enquiry form, with the
+    service of the page it was pressed on already ticked when there is one. With
+    no key the current page decides, which is what the header buttons want."""
+    if key is None:
+        key = ctx.path.strip('/')
+    about = ENQ.PAGE_INTEREST.get(key)
+    return ctx.u(ENQ.PATH) + ('?about=' + about if about else '')
 
 
 def btn(href, text, kind='primary', size='', icon_name='arrow-right', attrs=''):
@@ -394,7 +450,7 @@ def header(ctx):
                 <div class="mega-aside">
                   <div class="copy"><p class="eyebrow">Project enquiries</p><p>Not sure what you need? Talk it through with our team and we&rsquo;ll point you in the right direction.</p></div>
                   <a class="big" href="tel:{SITE['phone_href']}">{SITE['phone']}</a>
-                  {btn(ctx.u(CONTACT), 'Enquire Now', size='sm')}
+                  {btn(enquire_href(ctx), 'Enquire Now', size='sm')}
                 </div>
               </div>
             </div>
@@ -413,7 +469,7 @@ def header(ctx):
       </nav>
       <div class="header-actions">
         <a class="header-call" href="tel:{SITE['phone_href']}" aria-label="Call {SITE['phone']}"><span class="ring">{icon('phone')}</span><span class="txt"><small>Call us</small><b>{SITE['phone']}</b></span></a>
-        {btn(ctx.u(CONTACT), 'Enquire Now', size='sm')}
+        {btn(enquire_href(ctx), 'Enquire Now', size='sm')}
         <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav"><span class="bars" aria-hidden="true"><span></span></span>Menu</button>
       </div>
     </div>
@@ -426,7 +482,7 @@ def header(ctx):
     <a class="m-link m-anim" style="--i:4" href="{ctx.u('/blog/')}">Blog {arrow()}</a>
     <a class="m-link m-anim" style="--i:5" href="{ctx.u(CONTACT)}">Contact Us {arrow()}</a>
     <div class="m-actions m-anim" style="--i:6">
-      {btn(ctx.u(CONTACT), 'Enquire Now')}
+      {btn(enquire_href(ctx), 'Enquire Now')}
       {btn('tel:' + SITE['phone_href'], 'Call ' + SITE['phone'], 'glass', icon_name='phone')}
     </div>
     <div class="m-contact m-anim" style="--i:7"><span>Email <a href="mailto:{SITE['email']}">{SITE['email']}</a></span><span>The Courtyard, 225 Denby Dale Road, Wakefield, WF2 7AJ</span></div>
@@ -445,7 +501,7 @@ def footer(ctx):
     <div class="footer-brand">
       <a href="{ctx.u('/')}" aria-label="Econ Electrical home">{brand_logo(ctx, 104, 'logo')}</a>
       <p>{e(SITE['tagline'])} Commercial electrical installation, renewables and compliance from Wakefield, across the UK.</p>
-      <div class="footer-accred">{logo_img(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}{logo_img(ctx, 'logo-mcs', 'MCS certified')}{logo_img(ctx, 'logo-safecontractor', 'SafeContractor approved')}</div>
+      {logo_row(ctx, ('logo-niceic', 'logo-mcs', 'logo-safecontractor'), 'footer-accred')}
     </div>
     <div class="footer-col">
       <h4>Services</h4>
@@ -457,6 +513,7 @@ def footer(ctx):
         <li><a href="{ctx.u('/about-us/')}">About Us</a></li>
         <li><a href="{ctx.u('/projects/')}">Projects</a></li>
         <li><a href="{ctx.u('/blog/')}">Blog</a></li>
+        <li><a href="{ctx.u(ENQ.PATH)}">Project Enquiry</a></li>
         <li><a href="{ctx.u(CONTACT)}">Contact Us</a></li>
       </ul>
     </div>
@@ -597,7 +654,7 @@ def cta_band(ctx, key, kicker, heading, text, button='Get in Touch'):
         {eyebrow(kicker)}
         <h2>{e(heading)}</h2>
         <p>{e(text)}</p>
-        <div class="btn-row">{btn(ctx.u(CONTACT), button)}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
+        <div class="btn-row">{btn(ctx.u(CONTACT) if key == 'assessment' else enquire_href(ctx, key), button)}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
       </div>
     </div>
   </div>
@@ -614,10 +671,10 @@ def logos_section(ctx, alt=False):
     </div>
     <div class="logo-groups" data-reveal>
       <div class="logo-group"><p class="label">Technology Partners</p>
-        <div class="logo-tiles" style="--n:2"><div class="logo-tile">{logo_img(ctx, 'logo-solax', 'Solax Power')}</div><div class="logo-tile">{logo_img(ctx, 'logo-schneider', 'Schneider Electric')}</div></div>
+        <div class="logo-tiles" style="--n:2">{logo_tile(ctx, 'logo-solax', 'SolaX Power')}{logo_tile(ctx, 'logo-schneider', 'Schneider Electric')}</div>
       </div>
       <div class="logo-group"><p class="label">Accreditations</p>
-        <div class="logo-tiles" style="--n:3"><div class="logo-tile">{logo_img(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}</div><div class="logo-tile">{logo_img(ctx, 'logo-mcs', 'MCS certified')}</div><div class="logo-tile">{logo_img(ctx, 'logo-safecontractor', 'SafeContractor approved')}</div></div>
+        <div class="logo-tiles" style="--n:3">{logo_tile(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}{logo_tile(ctx, 'logo-mcs', 'MCS certified')}{logo_tile(ctx, 'logo-safecontractor', 'SafeContractor approved')}</div>
       </div>
     </div>
   </div>
@@ -749,7 +806,7 @@ def page_home(ctx):
       <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>{e(HOME['eyebrow'])}</p>
       <h1 class="display words">{h1a} <span class="accent" style="display:block">{h1b}</span></h1>
       <p class="lead fade-up" style="--d:.75s">{e(HOME['lede'])}</p>
-      <div class="btn-row fade-up" style="--d:.9s">{btn(ctx.u(CONTACT), 'Enquire Now')}{btn(ctx.u('/#services'), 'Explore Our Services', 'glass', icon_name='arrow-right')}</div>
+      <div class="btn-row fade-up" style="--d:.9s">{btn(enquire_href(ctx), 'Enquire Now')}{btn(ctx.u('/#services'), 'Explore Our Services', 'glass', icon_name='arrow-right')}</div>
     </div>
     <div class="hero-side fade-up" style="--d:1.1s">
       <button class="video-toggle" type="button" aria-label="Pause background video">{icon('pause', 'i i-pause')}{icon('play', 'i i-play')}<span class="txt">Pause</span></button>
@@ -772,9 +829,9 @@ def page_home(ctx):
     </div>
     <div class="about-copy" data-reveal>
       {eyebrow('About Econ Electrical')}
-      <h2>Powering Businesses for a <span class="accent">Better Future</span></h2>
+      <h2>Rooted in Yorkshire, <span class="accent">Built on Site</span></h2>
       <div class="copy">{''.join('<p>%s</p>' % e(p) for p in ABOUT_PARAS[:2])}</div>
-      <div class="mini-logos">{logo_img(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}{logo_img(ctx, 'logo-mcs', 'MCS certified')}{logo_img(ctx, 'logo-safecontractor', 'SafeContractor approved')}</div>
+      {logo_row(ctx, ('logo-niceic', 'logo-mcs', 'logo-safecontractor'))}
       <div class="btn-row">{btn(ctx.u('/about-us/'), 'Learn More About Us')}</div>
     </div>
   </div>
@@ -790,7 +847,7 @@ def page_home(ctx):
   <div class="container">
     <div class="section-head row" data-reveal>
       <div>{eyebrow('Our Services')}<h2>Complete Electrical &amp; Renewable Solutions</h2><p>{e(HOME['services_intro'])}</p></div>
-      <a class="link-arrow" href="{ctx.u(CONTACT)}">Discuss Your Project <span class="circle">{arrow()}</span></a>
+      <a class="link-arrow" href="{enquire_href(ctx)}">Discuss Your Project <span class="circle">{arrow()}</span></a>
     </div>
     <div class="svc-grid" data-stagger>{services}
     </div>
@@ -883,7 +940,7 @@ def page_service(ctx, slug):
     <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>Our Services</p>
     <h1 class="words">{words(s['name'])[0]}</h1>
     <p class="lead fade-up" style="--d:.45s">{e(s['lede'])}</p>
-    <div class="btn-row fade-up" style="--d:.6s">{btn(ctx.u(CONTACT), 'Enquire Now')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
+    <div class="btn-row fade-up" style="--d:.6s">{btn(enquire_href(ctx), 'Enquire Now')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
     <div class="hero-chips fade-up" style="--d:.75s">{''.join(anchors)}</div>
   </div>
 </section>
@@ -894,7 +951,7 @@ def page_service(ctx, slug):
       {eyebrow('What We Do')}
       <h2>{e(s['intro_h2'])}</h2>
       <div class="copy">{''.join('<p>%s</p>' % e(p) for p in s['intro'])}</div>
-      <div class="mini-logos">{logo_img(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}{logo_img(ctx, 'logo-mcs', 'MCS certified')}{logo_img(ctx, 'logo-safecontractor', 'SafeContractor approved')}</div>
+      {logo_row(ctx, ('logo-niceic', 'logo-mcs', 'logo-safecontractor'))}
     </div>
     <div class="feature-grid" data-stagger>{features}
     </div>
@@ -1038,7 +1095,7 @@ def page_project(ctx, slug):
       {eyebrow('Planning Something Similar?')}
       <h3>Talk to the team that delivered it.</h3>
       <p>{e(CTA_DEFAULT)}</p>
-      {btn(ctx.u(CONTACT), 'Discuss Your Project')}
+      {btn(enquire_href(ctx), 'Discuss Your Project')}
       <a class="cta-phone" href="tel:{SITE['phone_href']}">{icon('phone')}{SITE['phone']}</a>
     </aside>
   </div>
@@ -1113,7 +1170,7 @@ def page_landing(ctx, slug):
     <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>{e(d['kicker'])}</p>
     <h1 class="words">{words(d['h1'])[0]}</h1>
     <p class="lead fade-up" style="--d:.45s">{e(d['lede'])}</p>
-    <div class="btn-row fade-up" style="--d:.6s">{btn(ctx.u(CONTACT), 'Enquire Now')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
+    <div class="btn-row fade-up" style="--d:.6s">{btn(enquire_href(ctx), 'Enquire Now')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
     <div class="hero-chips fade-up" style="--d:.75s">{chips}</div>
   </div>
 </section>
@@ -1124,7 +1181,7 @@ def page_landing(ctx, slug):
       {eyebrow('Overview')}
       <h2>{e(d['intro_h2'])}</h2>
       <div class="copy">{''.join('<p>%s</p>' % e(p) for p in d['intro'])}</div>
-      <div class="mini-logos">{logo_img(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}{logo_img(ctx, 'logo-mcs', 'MCS certified')}{logo_img(ctx, 'logo-safecontractor', 'SafeContractor approved')}</div>
+      {logo_row(ctx, ('logo-niceic', 'logo-mcs', 'logo-safecontractor'))}
       {('<p class="cross-link">%s <a href="%s">%s %s</a></p>' % (e(d['cross_link'][0]), ctx.u(d['cross_link'][1]), e(d['cross_link'][2]), arrow())) if d.get('cross_link') else ''}
     </div>
     <div class="feature-grid" data-stagger>{points}
@@ -1235,7 +1292,7 @@ def page_residential(ctx):
     <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>{e(r['kicker'])}</p>
     <h1 class="words">{words(r['h1'])[0]}</h1>
     <p class="lead fade-up" style="--d:.45s">{e(r['lede'])}</p>
-    <div class="btn-row fade-up" style="--d:.6s">{btn(ctx.u(CONTACT), 'Book a Design Consultation')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
+    <div class="btn-row fade-up" style="--d:.6s">{btn(enquire_href(ctx), 'Book a Design Consultation')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
     <div class="hero-chips fade-up" style="--d:.75s"><span class="chip">{icon('badge-check')}MCS Certified</span><span class="chip">{icon('shield-check')}NICEIC Approved</span>{ext(SITE['google_profile'], icon('sparkles') + 'Rated 4.9 on Google', 'chip')}</div>
   </div>
 </section>
@@ -1274,7 +1331,7 @@ def page_residential(ctx):
   <div class="container">
     <div class="section-head row" data-reveal>
       <div>{eyebrow('Your Options')}<h2>{e(r['tiers_h2'])}</h2><p>Every home is different, so every system is designed from scratch, usually starting from one of these three.</p></div>
-      <a class="link-arrow" href="{ctx.u(CONTACT)}">Talk It Through <span class="circle">{arrow()}</span></a>
+      <a class="link-arrow" href="{enquire_href(ctx)}">Talk It Through <span class="circle">{arrow()}</span></a>
     </div>
     <div class="tier-grid" data-stagger>{tiers}
     </div>
@@ -1304,7 +1361,7 @@ def page_residential(ctx):
       {eyebrow('Aftercare')}
       <h2>{e(r['support_h2'])}</h2>
       <div class="copy"><p>Your system should look after you for decades, and so should we. Our team stays on hand long after the scaffold comes down.</p></div>
-      <div class="mini-logos">{logo_img(ctx, 'logo-solax', 'SolaX Power')}{logo_img(ctx, 'logo-mcs', 'MCS certified')}{logo_img(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}</div>
+      {logo_row(ctx, ('logo-solax', 'logo-mcs', 'logo-niceic'))}
     </div>
     <div class="feature-grid" data-stagger>{support}
     </div>
@@ -1425,7 +1482,7 @@ def page_about(ctx):
       <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>About Us</p>
       <h1 class="words">{words('Yorkshire Roots, Nationwide Reach')[0]}</h1>
       <p class="lead fade-up" style="--d:.45s">Commercial and industrial electrical contractors based in Wakefield, delivering projects for businesses right across the UK.</p>
-      <div class="btn-row fade-up" style="--d:.6s">{btn(ctx.u(CONTACT), 'Enquire Now')}{btn(ctx.u('/projects/'), 'See Our Projects', 'glass')}</div>
+      <div class="btn-row fade-up" style="--d:.6s">{btn(enquire_href(ctx), 'Enquire Now')}{btn(ctx.u('/projects/'), 'See Our Projects', 'glass')}</div>
     </div>
     <figure class="split-media fade-up" style="--d:.35s">
       {img(ctx, 'about-vans', 'Two Econ Electrical branded electric vans parked side by side', '(max-width: 960px) 92vw, 52vw', eager=True)}
@@ -1439,7 +1496,7 @@ def page_about(ctx):
     <div class="stack" data-reveal style="display:grid;gap:26px">
       {eyebrow('Who We Are')}
       <p class="statement">Proud of our Yorkshire roots, trusted on large scale projects across the country.</p>
-      <div class="mini-logos">{logo_img(ctx, 'logo-niceic', 'NICEIC Approved Contractor')}{logo_img(ctx, 'logo-mcs', 'MCS certified')}{logo_img(ctx, 'logo-safecontractor', 'SafeContractor approved')}</div>
+      {logo_row(ctx, ('logo-niceic', 'logo-mcs', 'logo-safecontractor'))}
     </div>
     <div class="copy" data-reveal>{''.join('<p>%s</p>' % e(p) for p in ABOUT_PARAS)}</div>
   </div>
@@ -1522,15 +1579,54 @@ def faq_jsonld(faqs):
         for q, a in faqs]}
 
 
-def assess_field(ctx, f):
-    """One question on the assessment form.
+def choice_field(f, fid):
+    """A question answered by tapping: 'radio' takes one answer, 'chips' any number.
+
+    Each answer is a real radio or checkbox inside its own label, so it works with a
+    keyboard, a screen reader and no script at all; the pill is only how it looks.
+    The chips post as interests[] when there is no script (Netlify keeps a [] name
+    as a list), and with script the page copies the ticks into one plain field,
+    which is what the emails read, so a list never has to survive the trip.
+    """
+    multi = f['type'] == 'chips'
+    hint = f.get('hint') or ('optional' if f.get('optional') else '')
+    hint_html = ' <span class="opt">(%s)</span>' % e(hint) if hint else ''
+    data = ''
+    if multi:
+        data += ' data-multi'
+        if f.get('required'):
+            data += ' data-required'
+    if f.get('phone_if'):
+        data += ' data-phone-if="%s"' % e('|'.join(f['phone_if']))
+    items = []
+    for i, o in enumerate(f['options']):
+        key, label = o if isinstance(o, tuple) else (None, o)
+        req = ' required' if f.get('required') and not multi and i == 0 else ''
+        items.append(
+            '<label class="pick"><input type="%s" name="%s" value="%s"%s%s>'
+            '<span>%s%s</span></label>'
+            % ('checkbox' if multi else 'radio', f['name'] + ('[]' if multi else ''), e(label),
+               ' data-key="%s"' % key if key else '', req,
+               icon('check', 'i tick'), e(label)))
+    extra = ''
+    if multi:
+        extra = '<input type="hidden" name="%s" value="" data-joined>' % f['name']
+    return ('<fieldset class="field full choice" id="%s"%s><legend>%s%s</legend>'
+            '<div class="picks">%s</div>%s</fieldset>'
+            % (fid, data, e(f['label']), hint_html, ''.join(items), extra))
+
+
+def assess_field(ctx, f, prefix='a-'):
+    """One question on the assessment form, or on the enquiry form.
 
     Everything is a labelled control in the same shape so the form reads as one list
     rather than a pile of different widgets. Nothing marked 'lease' is ever required
     in the HTML: the script hides that group for owner occupiers, and a required
     field the browser cannot show is a submit button that silently does nothing.
     """
-    fid = 'a-' + f['name']
+    fid = prefix + f['name']
+    if f['type'] in ('chips', 'radio'):
+        return choice_field(f, fid)
     req = ' required' if f.get('required') else ''
     opt = ' <span class="opt">(optional)</span>' if f.get('optional') else ''
     cls = 'field' + (' full' if f.get('full') else '') + (' lease-only' if f.get('lease') else '')
@@ -1568,7 +1664,7 @@ def page_assessment(ctx):
         # enctype matters: without it the roof photo and the bills never leave the browser.
         form_open = ('<form class="form assess-form" name="%s" method="POST" action="%s" '
                      'data-netlify="true" netlify-honeypot="bot-field" '
-                     'enctype="multipart/form-data" data-assess>\n'
+                     'enctype="multipart/form-data" data-assess data-remember-name>\n'
                      '<input type="hidden" name="form-name" value="%s">\n'
                      '<input type="hidden" name="subject" data-remove-prefix '
                      'value="Free site energy assessment request from econelectrical.co.uk">\n'
@@ -1668,7 +1764,7 @@ def page_assessment(ctx):
 def page_contact(ctx):
     if ctx.mode == 'site':
         form_open = ('<form class="form" name="contact" method="POST" action="/thank-you/" data-netlify="true" '
-                     'netlify-honeypot="bot-field">\n<input type="hidden" name="form-name" value="contact">\n'
+                     'netlify-honeypot="bot-field" data-remember-name>\n<input type="hidden" name="form-name" value="contact">\n'
                      '<input type="hidden" name="subject" data-remove-prefix value="New website enquiry from econelectrical.co.uk">\n'
                      '<p class="hp"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>')
         map_inner = None
@@ -1710,7 +1806,8 @@ def page_contact(ctx):
 <section class="section">
   <div class="container contact-grid">
     <div class="form-card" data-reveal>
-      <div style="display:grid;gap:14px">{eyebrow('Send Us a Message')}<h2 style="font-size:clamp(1.9rem,1.4rem + 1.6vw,2.8rem)">Tell Us About Your Project</h2></div>
+      <div style="display:grid;gap:14px">{eyebrow('Send Us a Message')}<h2 style="font-size:clamp(1.9rem,1.4rem + 1.6vw,2.8rem)">Drop Us a Line</h2></div>
+      <a class="enq-link" href="{enquire_href(ctx)}"><span class="ico-box">{icon('list-checks')}</span><span><b>Got a project in mind?</b><small>Our project enquiry takes two minutes, mostly ticks, and gets you a faster answer.</small></span>{icon('arrow-right')}</a>
       {form_open}
         <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" type="text" autocomplete="name" placeholder="Your name" required></div>
         <div class="field"><label for="f-company">Company <span class="opt">(optional)</span></label><input id="f-company" name="company" type="text" autocomplete="organization" placeholder="Company name"></div>
@@ -1754,6 +1851,155 @@ def page_contact(ctx):
             'description': 'Commercial and industrial electrical contractors in Wakefield. Get in touch with Econ Electrical to discuss your installation, renewables or compliance project.',
             'path': CONTACT, 'jsonld': [org_jsonld()]}
     return meta, body
+
+
+def page_enquiry(ctx):
+    """The project enquiry form. Every "Enquire Now" on the site lands here.
+
+    Four short groups of mostly taps, with what happens next beside it, so the
+    person knows before they press send that a real person replies within a day.
+    """
+    to = FORM_ROUTING[ENQ.NAME]['to'][0]
+    if ctx.mode == 'site':
+        form_open = ('<form class="form assess-form enq-form" name="%s" method="POST" action="%s" '
+                     'data-netlify="true" netlify-honeypot="bot-field" data-enquiry data-remember-name>\n'
+                     '<input type="hidden" name="form-name" value="%s">\n'
+                     '<input type="hidden" name="subject" data-remove-prefix '
+                     'value="New project enquiry from econelectrical.co.uk">\n'
+                     '<p class="hp"><label>Leave this empty '
+                     '<input name="bot-field" tabindex="-1" autocomplete="off"></label></p>'
+                     ) % (ENQ.NAME, ENQ.THANKS, ENQ.NAME)
+    else:
+        form_open = ('<form class="form assess-form enq-form" name="%s" method="POST" '
+                     'data-preview data-email="%s" data-enquiry>' % (ENQ.NAME, to))
+
+    groups = ''
+    for n, (title, fields) in enumerate(ENQ.FIELDS, 1):
+        groups += ('<fieldset class="assess-group enq-group"><legend><span class="enq-n">%d</span>%s</legend>'
+                   '<div class="assess-fields">%s</div></fieldset>'
+                   % (n, e(title), ''.join(assess_field(ctx, f, 'e-') for f in fields)))
+
+    steps = ''.join('<li><span class="when">%s</span><p>%s</p></li>' % (e(w), e(p))
+                    for w, p in ENQ.next_steps(AUTO_REPLY))
+
+    body = f'''
+<section class="page-hero short compact">
+  {img(ctx, 'installation-subcontract', 'Electricians going through drawings beside a new distribution board', '100vw', eager=True)}
+  <div class="grain"></div>
+  <div class="container page-hero-inner">
+    {crumbs(ctx, [('Home', '/'), ('Project Enquiry', None)])}
+    <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>{e(ENQ.HERO['kicker'])}</p>
+    <h1 class="words">{words(ENQ.HERO['h1'])[0]}</h1>
+    <p class="lead fade-up" style="--d:.45s">{e(ENQ.HERO['lede'])}</p>
+  </div>
+</section>
+
+<section class="section enq-section" id="enquiry-form">
+  <div class="container enq-grid">
+    <div class="form-card" data-reveal>
+      {form_open}
+        {groups}
+        <div class="form-foot">
+          <span class="form-note">{icon('shield-check')}<span>We only use your details to reply to your enquiry. <a href="{ctx.u('/privacy-notice/')}">Privacy notice</a></span></span>
+          <button class="btn btn-primary" type="submit">Send My Enquiry<span class="btn-ico">{arrow()}</span></button>
+        </div>
+        <p class="form-status" role="status" hidden></p>
+      </form>
+    </div>
+    <aside class="enq-aside">
+      <div class="info-card enq-next" data-reveal>
+        {eyebrow('What Happens Next')}
+        <ol class="enq-steps">{steps}</ol>
+      </div>
+      <div class="info-card enq-talk" data-reveal>
+        <h2 class="h-sm">Rather talk it through?</h2>
+        <div class="info-row"><span class="ico-box">{icon('phone')}</span><div><small>Call us</small><a href="tel:{SITE['phone_href']}">{SITE['phone']}</a></div></div>
+        <div class="info-row"><span class="ico-box">{icon('messages-square')}</span><div><small>WhatsApp</small>{ext(SITE['whatsapp_href'], SITE['whatsapp'])}</div></div>
+        <div class="info-row"><span class="ico-box">{icon('clock')}</span><div><small>Opening hours</small><span>{e(SITE['hours_text'])}</span></div></div>
+      </div>
+    </aside>
+  </div>
+</section>
+{logos_section(ctx, alt=True)}'''
+    meta = {'title': ENQ.HERO['title'], 'description': ENQ.HERO['description'], 'path': ENQ.PATH,
+            'image': abs_img('installation-subcontract'), 'jsonld': [org_jsonld()]}
+    return meta, body
+
+
+def page_thanks(ctx, path, kicker, h1, lede, steps, title, description):
+    """A confirmation page in the same shape as the assessment one: what happens
+    next, step by step, with somewhere useful to go while they wait. The first
+    name typed into the form is added to the opening line by the page script."""
+    rows = ''.join('<li><span class="when">%s</span><p>%s</p></li>' % (e(w), e(p)) for w, p in steps)
+    waiting = ''.join(
+        '<li><a href="%s">%s%s</a></li>' % (ctx.u(u), e(t), icon('arrow-right'))
+        for u, t in [('/projects/', 'Our Projects'), ('/about-us/', 'About Econ Electrical'),
+                     (ASSESS.PATH, 'Free Site Energy Assessment')])
+    body = f'''
+<section class="page-hero plain" style="min-height:clamp(480px,58vh,620px);align-items:center">
+  <div class="container page-hero-inner">
+    <div class="notice">
+      <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>{e(kicker)}</p>
+      <h1 class="words">{words(h1)[0]}</h1>
+      <p class="lead fade-up" style="--d:.45s"><span data-first-name hidden></span><span data-lede>{e(lede)}</span></p>
+    </div>
+  </div>
+</section>
+
+<section class="section flush-top">
+  <div class="container">
+    <div class="thanks-cols">
+      <ol class="next-steps" data-stagger>{rows}</ol>
+      <aside class="panel wait-panel" data-reveal>
+        <h2 class="h-sm">While you wait</h2>
+        <p>A look at the kind of work we do, and who you will be dealing with.</p>
+        <ul class="wait-links">{waiting}</ul>
+      </aside>
+    </div>
+    <div class="panel next-panel" data-reveal>
+      <h2 style="font-size:clamp(1.5rem,1.2rem + 1vw,2rem)">Need us sooner?</h2>
+      <p>Call us on {SITE['phone']} ({e(SITE['hours_text'])}) or message us on WhatsApp.</p>
+      <div class="btn-row">
+        <a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a>
+        {ext(SITE['whatsapp_href'], 'WhatsApp Us<span class="btn-ico">%s</span>' % icon('messages-square'), 'btn btn-primary')}
+      </div>
+    </div>
+  </div>
+</section>'''
+    return {'title': title, 'description': description, 'path': path, 'noindex': True}, body
+
+
+def first_step(what):
+    """The opening line of every confirmation page. Only promises an email when
+    the confirmation email is actually switched on."""
+    if AUTO_REPLY:
+        return ('Straight away', 'A confirmation email is on its way to you now with a copy of your %s. '
+                                 'If it is not in your inbox in a few minutes, check your junk folder.' % what)
+    return ('Straight away', 'Your %s has come straight through to our team, and nothing more is needed '
+                             'from you.' % what)
+
+
+def page_enquiry_thanks(ctx):
+    steps = [first_step('enquiry'),
+             ('Within one working day', 'A member of our team gets in touch to talk it through, by phone or email, '
+                                 'whichever you chose.'),
+             ('If you have drawings or photos', ('Reply to our confirmation email with them attached and '
+                                                 'they come straight to our team.') if AUTO_REPLY else
+                                                ('Email them to %s with your name in the subject, so we '
+                                                 'can match them to your enquiry.' % SITE['email'])),
+             ('Then', 'If it suits, we survey the site or price from your drawings, and you get a clear '
+                      'written quote.')]
+    return page_thanks(ctx, ENQ.THANKS, 'Enquiry Received', 'Thanks, We Have Got It',
+                       'Your enquiry is with us. Here is exactly what happens from here.', steps,
+                       'Enquiry Received | Econ Electrical', 'Your project enquiry has been received.')
+
+
+def page_contact_thanks(ctx):
+    steps = [first_step('message'),
+             ('Within one working day', 'A member of our team gets back to you.')]
+    return page_thanks(ctx, '/thank-you/', 'Message Sent', 'Thanks for Getting in Touch',
+                       'Your message is with us. Here is what happens next.', steps,
+                       'Thank You | Econ Electrical', 'Your message has been received.')
 
 
 def cat_slug(cat):
@@ -1919,14 +2165,16 @@ def page_assessment_thanks(ctx):
     whether the form went anywhere, and it asks for the two things that most often
     hold the report up: a year of bills, and the signed Letter of Authority.
     """
-    # No automatic confirmation email goes to the person, so this does not promise
-    # one. Telling someone to watch their inbox for a message that never arrives is
-    # worse than telling them nothing.
-    steps = [('Today', 'Your request is with us and nothing more is needed from you. If you '
+    # The first step only promises a confirmation email once AUTO_REPLY says one is
+    # really sent. Telling someone to watch their inbox for a message that never
+    # arrives is worse than telling them nothing.
+    today = (first_step('request') if AUTO_REPLY else
+             ('Today', 'Your request is with us and nothing more is needed from you. If you '
                        'have heard nothing by tomorrow afternoon, ring 01924 677085, because '
-                       'it means something has gone wrong at our end.'),
-             ('Within one working day', 'One of us calls you to confirm what you have sent and '
-                                        'book the site visit around your hours.'),
+                       'it means something has gone wrong at our end.'))
+    steps = [today,
+             ('Within one working day', 'A member of our team calls you to confirm what you have sent and '
+                                 'book the site visit around your hours.'),
              ('If you ticked the Letter of Authority', 'We email you a one page form to sign. '
                                                        'It takes a minute and it is what lets us '
                                                        'pull your half hourly usage.'),
@@ -2019,11 +2267,9 @@ def all_pages():
     pages += [('/%s/' % s, (lambda s: lambda ctx: page_project(ctx, s))(s)) for s in PROJECT_ORDER]
     pages += [('/%s/' % p['slug'], (lambda p: lambda ctx: page_post(ctx, p))(p)) for p in POSTS]
     pages += [('/privacy-notice/', page_privacy)]
-    pages += [('/thank-you/', lambda ctx: page_simple(
-        ctx, '/thank-you/', 'Message Sent', 'Thanks for Getting in Touch',
-        'We’ll get back to you as soon as we can. If it’s urgent, call us on %s.' % SITE['phone'],
-        'Thank You | Econ Electrical'))]
+    pages += [('/thank-you/', page_contact_thanks)]
     pages += [(ASSESS.PATH, page_assessment), (ASSESS.THANKS, page_assessment_thanks)]
+    pages += [(ENQ.PATH, page_enquiry), (ENQ.THANKS, page_enquiry_thanks)]
     return pages
 
 
@@ -2072,13 +2318,55 @@ def build(mode):
 # Who each form goes to. Everything from the site goes to Jonathan and nowhere
 # else, which is how he asked for it: one inbox, and he forwards what Robert or
 # the office needs. Adding a recipient is a one line change here.
+#
+# 'reply' is the instant confirmation the customer gets. It comes from the address
+# already on the website, and a reply to it (drawings, photos, a question) lands in
+# Jonathan's inbox. It promises "a member of our team", never a named person, and
+# 'echo' lists the answers repeated back to them, by field and the label to show.
+# Only tick and drop down answers are ever echoed, never anything typed.
+REPLY_FROM = 'Econ Electrical <info@econelectrical.co.uk>'
+REPLY_TO = ['jonathan@econelectrical.co.uk']
+PROMISE = 'A member of our team will be in touch within one working day.'
+
 FORM_ROUTING = {
+    'enquiry': {'to': ['jonathan@econelectrical.co.uk'], 'cc': [],
+                'title': 'Project Enquiry',
+                'subject': 'Project enquiry',
+                'reply': {'from': REPLY_FROM, 'reply_to': REPLY_TO,
+                          'subject': 'Your enquiry with Econ Electrical',
+                          'preheader': PROMISE,
+                          'intro': 'Thanks for your enquiry. It has come through safely and is with us now.',
+                          'promise': PROMISE,
+                          'summary_heading': 'Your enquiry',
+                          'echo': [['interests', 'Interested in'], ['site_type', 'Type of site'],
+                                   ['stage', 'Project'], ['timescale', 'Start'],
+                                   ['next_step', 'First step'], ['contact_method', 'Contact by'],
+                                   ['contact_time', 'Best time']],
+                          'extra': ('Got drawings, a spec or photos of the site? Reply to this email with '
+                                    'them attached.')}},
     'site-assessment': {'to': ['jonathan@econelectrical.co.uk'], 'cc': [],
                         'title': 'Site Energy Assessment Request',
-                        'subject': 'Site assessment'},
+                        'subject': 'Site assessment',
+                        'reply': {'from': REPLY_FROM, 'reply_to': REPLY_TO,
+                                  'subject': 'Your free site energy assessment request',
+                                  'preheader': 'A member of our team will be in touch within one working day to book your site visit.',
+                                  'intro': ('Thanks for requesting a free site energy assessment. Your site '
+                                            'details have come through safely.'),
+                                  'promise': 'A member of our team will be in touch within one working day to book your site visit.',
+                                  'summary_heading': '', 'echo': [],
+                                  'extra': ('If you did not attach a year of electricity bills, reply to this '
+                                            'email with whatever you have. It is the one thing that speeds '
+                                            'the report up.')}},
     'contact': {'to': ['jonathan@econelectrical.co.uk'], 'cc': [],
                 'title': 'Website Enquiry',
-                'subject': 'Website enquiry'},
+                'subject': 'Website enquiry',
+                'reply': {'from': REPLY_FROM, 'reply_to': REPLY_TO,
+                          'subject': 'Your message to Econ Electrical',
+                          'preheader': PROMISE,
+                          'intro': 'Thanks for getting in touch. Your message has come through safely.',
+                          'promise': PROMISE,
+                          'summary_heading': '', 'echo': [],
+                          'extra': 'If there is anything you would like to add, just reply to this email.'}},
 }
 
 # The contact form is written inline in page_contact rather than as data, so its
@@ -2093,32 +2381,51 @@ CONTACT_FIELDS = [['The enquiry', [
 ]]]
 
 
+def email_fields(fields):
+    """What the function needs to know about each question: its name, the label
+    for the email (the short one where a question is long), its type, and the
+    answers it offers, so only those are ever echoed back to a customer."""
+    out = []
+    for f in fields:
+        d = {'name': f['name'], 'label': f.get('short') or f['label'], 'type': f['type']}
+        if f.get('options'):
+            d['options'] = [list(o) if isinstance(o, tuple) else o for o in f['options']]
+        out.append(d)
+    return out
+
+
 def write_function():
-    """Generate the Netlify function that emails a website enquiry to the office.
+    """Generate the Netlify function that emails a website enquiry to the office
+    and a confirmation to the customer.
 
     The labels come straight from the form definitions, so an email can never
     show a question the form no longer asks, or a raw field name for one it has
     gained. It lands in dist/functions rather than dist/site because a function
     inside the published folder would also be served as a downloadable file.
     """
-    assess = [[heading, [{'name': f['name'], 'label': f['label'], 'type': f['type']}
-                         for f in fs]]
-              for heading, _note, fs in ASSESS.FIELDS]
     forms = {k: dict(v) for k, v in FORM_ROUTING.items()}
-    forms['site-assessment']['fields'] = assess
+    forms['site-assessment']['fields'] = [[h, email_fields(fs)] for h, _note, fs in ASSESS.FIELDS]
     forms['contact']['fields'] = CONTACT_FIELDS
+    forms['enquiry']['fields'] = [[h, email_fields(fs)] for h, fs in ENQ.FIELDS]
 
     # Every field the function claims to know about has to exist on the page it
     # came from, or the email would quietly drop an answer somebody typed.
-    html = open(os.path.join(HERE, 'dist', 'site', 'contact-us-wakefield-electricians',
-                             'index.html')).read()
-    missing = [f['name'] for _h, fs in CONTACT_FIELDS for f in fs
-               if 'name="%s"' % f['name'] not in html]
-    if missing:
-        raise SystemExit('contact form has no fields named: %s' % ', '.join(missing))
+    def check(page, groups):
+        html = open(os.path.join(HERE, 'dist', 'site', page.strip('/'), 'index.html')).read()
+        missing = [f['name'] for _h, fs in groups for f in fs if 'name="%s"' % f['name'] not in html]
+        if missing:
+            raise SystemExit('%s has no fields named: %s' % (page, ', '.join(missing)))
+    check(CONTACT, CONTACT_FIELDS)
+    check(ENQ.PATH, forms['enquiry']['fields'])
+    for name, cfg in forms.items():
+        for field, _label in cfg['reply']['echo']:
+            if not any(f['name'] == field for _h, fs in cfg['fields'] for f in fs):
+                raise SystemExit('%s echoes a field it does not have: %s' % (name, field))
 
+    site = {k: SITE[k] for k in ('domain', 'legal', 'phone', 'phone_href', 'hours_text', 'address')}
     src = open(os.path.join(HERE, 'function', 'submission-created.js')).read()
     src = src.replace('__FORMS__', json.dumps(forms, indent=2, ensure_ascii=False))
+    src = src.replace('__SITE__', json.dumps(site, indent=2, ensure_ascii=False))
     write(os.path.join(HERE, 'dist', 'functions', 'submission-created.js'), src)
 
 

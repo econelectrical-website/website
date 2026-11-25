@@ -57,7 +57,16 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* Mega menus: hover on desktop is CSS; clicks and keys open them everywhere */
+  /* Mega menus: hover on desktop is CSS; clicks and keys open them everywhere.
+
+     A menu opened by a click used to stay pinned until the next click anywhere: the
+     click left focus on the button, :focus-within kept the panel showing, and scrolling
+     slid the page underneath a panel covering the top third of the screen. So a menu now
+     closes when the pointer leaves it and as soon as the page scrolls, and closing
+     takes focus off its button. Touch screens and keyboards still open it by click or
+     key, because neither has a hover to fall back on. */
+  var hoverNav = window.matchMedia('(hover: hover) and (min-width: 1101px)');
+  var openedAt = null;
   function closeMenus(except) {
     document.querySelectorAll('.nav-item.open').forEach(function (li) {
       if (li === except) return;
@@ -65,19 +74,44 @@
       var b = li.querySelector('.nav-link');
       if (b) b.setAttribute('aria-expanded', 'false');
     });
-    if (header) header.classList.toggle('has-open', !!document.querySelector('.nav-item.open'));
+    var held = document.activeElement && document.activeElement.closest &&
+               document.activeElement.closest('.nav-item.has-mega');
+    if (held && held !== except && !held.classList.contains('open')) document.activeElement.blur();
+    var anyOpen = !!document.querySelector('.nav-item.open');
+    if (!anyOpen) openedAt = null;
+    if (header) header.classList.toggle('has-open', anyOpen);
   }
   document.querySelectorAll('.nav-item.has-mega > .nav-link').forEach(function (btn) {
+    var li = btn.parentElement, leaveTimer = null;
     btn.addEventListener('click', function () {
-      var li = btn.parentElement;
       var willOpen = !li.classList.contains('open');
       closeMenus(li);
       li.classList.toggle('open', willOpen);
       btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
       header.classList.toggle('has-open', willOpen);
+      openedAt = willOpen ? window.scrollY : null;
+      if (!willOpen) btn.blur();
     });
+    /* With a mouse, leaving the item and its panel closes it, after a short grace so a
+       diagonal move down into the panel does not flicker it shut. */
+    li.addEventListener('mouseleave', function () {
+      if (!hoverNav.matches) return;
+      leaveTimer = setTimeout(function () { li.classList.remove('open'); closeMenus(); }, 140);
+    });
+    li.addEventListener('mouseenter', function () { clearTimeout(leaveTimer); });
   });
   document.addEventListener('click', function (e) { if (!e.target.closest('.nav-item.has-mega')) closeMenus(); });
+  /* Scrolling says the person wants the page, not the menu. A clicked menu closes; a
+     hovered one is held shut ("quiet") until the pointer goes back to a menu heading,
+     because with the cursor resting on the panel, hover alone would keep it showing. */
+  window.addEventListener('scroll', function () {
+    if (openedAt !== null && Math.abs(window.scrollY - openedAt) > 40) closeMenus();
+    if (header && hoverNav.matches && !header.classList.contains('menus-quiet') &&
+        document.querySelector('.nav-item.has-mega:hover')) header.classList.add('menus-quiet');
+  }, { passive: true });
+  document.querySelectorAll('.nav-item.has-mega > .nav-link').forEach(function (btn) {
+    btn.addEventListener('mouseenter', function () { if (header) header.classList.remove('menus-quiet'); });
+  });
 
   /* Mobile menu */
   var toggle = document.querySelector('.menu-toggle');
@@ -210,6 +244,71 @@
     });
   });
 
+  /* Project enquiry form.
+     The interest tick boxes are copied into one plain field as they change, so
+     the email and Netlify's own list show "Solar PV; EV charging" rather than
+     relying on a list surviving the trip; once that field is being kept up to
+     date the boxes themselves stop being sent. At least one has to be ticked.
+     A button elsewhere on the site can arrive with ?about=ev to tick one for
+     them, and choosing a call or WhatsApp makes the phone number required. */
+  document.querySelectorAll('[data-enquiry]').forEach(function (form) {
+    form.querySelectorAll('[data-multi]').forEach(function (group) {
+      var boxes = Array.prototype.slice.call(group.querySelectorAll('input[type="checkbox"]'));
+      var joined = group.querySelector('[data-joined]');
+      boxes.forEach(function (b) { b.removeAttribute('name'); });
+      var needed = group.hasAttribute('data-required');
+      function sync() {
+        joined.value = boxes.filter(function (b) { return b.checked; }).map(function (b) { return b.value; }).join('; ');
+        /* Flagged on the first box, so the browser's own check stops the form in
+           the right place, in page order, like any other required question. */
+        if (needed) boxes[0].setCustomValidity(joined.value ? '' : 'Tick at least one, or \u201cNot sure yet\u201d if you would like advice.');
+      }
+      boxes.forEach(function (b) { b.addEventListener('change', sync); });
+      var about = null;
+      try { about = new URLSearchParams(location.search).get('about'); } catch (err) {}
+      if (about) boxes.forEach(function (b) { if (b.getAttribute('data-key') === about) b.checked = true; });
+      sync();
+    });
+
+    var phone = form.querySelector('[name="phone"]');
+    var phoneHint = phone ? form.querySelector('label[for="' + phone.id + '"] .opt') : null;
+    form.querySelectorAll('[data-phone-if]').forEach(function (group) {
+      var needs = group.getAttribute('data-phone-if').split('|');
+      function syncPhone() {
+        var picked = group.querySelector('input:checked');
+        var need = !!picked && needs.indexOf(picked.value) !== -1;
+        if (!phone) return;
+        phone.required = need;
+        if (phoneHint) phoneHint.textContent = need ? '(so we can call you)' : '(optional)';
+      }
+      group.addEventListener('change', syncPhone);
+      syncPhone();
+    });
+  });
+
+  /* The confirmation pages greet people by name. The first name is kept for this
+     tab only, read once on the next page and then forgotten. */
+  var FIRST_KEY = 'econ:first';
+  document.querySelectorAll('form[data-remember-name]').forEach(function (form) {
+    form.addEventListener('submit', function (e) {
+      if (e.defaultPrevented) return;
+      var field = form.querySelector('[name="name"]');
+      var first = field ? (field.value.trim().split(/\s+/)[0] || '') : '';
+      if (!/^[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ'’-]{0,23}$/.test(first)) return;
+      session(function (s) { s.setItem(FIRST_KEY, first.charAt(0).toUpperCase() + first.slice(1)); });
+    });
+  });
+  var firstSlot = document.querySelector('[data-first-name]');
+  if (firstSlot) {
+    var firstName = session(function (s) { var v = s.getItem(FIRST_KEY); s.removeItem(FIRST_KEY); return v; });
+    var lede = document.querySelector('[data-lede]');
+    if (firstName && lede) {
+      firstSlot.textContent = firstName + ', ';
+      firstSlot.hidden = false;
+      lede.textContent = lede.textContent.charAt(0).toLowerCase() + lede.textContent.slice(1);
+    }
+  }
+
   /* Hero video: choose the cut that suits the screen, honour reduced motion and
      data saving, and offer a pause control. */
   var smallScreen = window.matchMedia('(max-width: 760px)').matches;
@@ -295,9 +394,8 @@
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>';
   }
 
-  /* Contact form on the preview: there is nowhere to send it yet */
-  var form = document.querySelector('form[data-preview]');
-  if (form) {
+  /* Forms on the preview: there is nowhere to send them yet */
+  document.querySelectorAll('form[data-preview]').forEach(function (form) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (!form.reportValidity()) return;
@@ -305,7 +403,7 @@
       status.hidden = false;
       status.textContent = 'This is the preview of the new site, so nothing was sent. Once the site is live, messages from this form go straight to ' + form.getAttribute('data-email') + '.';
     });
-  }
+  });
 
   /* Category filters for the blog and the project archive.
      Without script every card is listed, so the filters are additive only. */
