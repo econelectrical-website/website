@@ -79,10 +79,6 @@ const FORMS = {
         [
           "contact_method",
           "Contact by"
-        ],
-        [
-          "contact_time",
-          "Best time"
         ]
       ],
       "extra": "Got drawings, a spec or photos of the site? Reply to this email with them attached."
@@ -145,7 +141,42 @@ const FORMS = {
                 "Not sure yet, need advice"
               ]
             ]
+          }
+        ]
+      ],
+      [
+        "Your details",
+        [
+          {
+            "name": "name",
+            "label": "Name",
+            "type": "text"
           },
+          {
+            "name": "email",
+            "label": "Email",
+            "type": "email"
+          },
+          {
+            "name": "phone",
+            "label": "Phone",
+            "type": "tel"
+          },
+          {
+            "name": "company",
+            "label": "Company",
+            "type": "text"
+          },
+          {
+            "name": "message",
+            "label": "Message",
+            "type": "textarea"
+          }
+        ]
+      ],
+      [
+        "A few more details",
+        [
           {
             "name": "site_type",
             "label": "Type of site",
@@ -167,16 +198,11 @@ const FORMS = {
             "name": "location",
             "label": "Site location",
             "type": "text"
-          }
-        ]
-      ],
-      [
-        "Where are you up to?",
-        [
+          },
           {
             "name": "stage",
             "label": "Project",
-            "type": "radio",
+            "type": "select",
             "options": [
               "Live, ready to go",
               "Pricing or tendering",
@@ -186,7 +212,7 @@ const FORMS = {
           {
             "name": "timescale",
             "label": "Start",
-            "type": "radio",
+            "type": "select",
             "options": [
               "As soon as possible",
               "Within 3 months",
@@ -198,68 +224,23 @@ const FORMS = {
           {
             "name": "next_step",
             "label": "Wants first",
-            "type": "radio",
+            "type": "select",
             "options": [
               "A call to talk it through",
               "A site survey",
               "A quote from drawings or a spec",
               "Just some information for now"
             ]
-          }
-        ]
-      ],
-      [
-        "Your details",
-        [
-          {
-            "name": "name",
-            "label": "Name",
-            "type": "text"
-          },
-          {
-            "name": "company",
-            "label": "Company",
-            "type": "text"
-          },
-          {
-            "name": "email",
-            "label": "Email",
-            "type": "email"
-          },
-          {
-            "name": "phone",
-            "label": "Phone",
-            "type": "tel"
           },
           {
             "name": "contact_method",
             "label": "Contact by",
-            "type": "radio",
+            "type": "select",
             "options": [
               "Phone call",
               "Email",
               "WhatsApp"
             ]
-          },
-          {
-            "name": "contact_time",
-            "label": "Best time",
-            "type": "radio",
-            "options": [
-              "Morning",
-              "Afternoon",
-              "Any time"
-            ]
-          }
-        ]
-      ],
-      [
-        "Anything else?",
-        [
-          {
-            "name": "message",
-            "label": "Message",
-            "type": "textarea"
           },
           {
             "name": "heard",
@@ -794,7 +775,7 @@ function buildEmail(form, data, meta) {
     '',
     ...(files.length ? ['ATTACHMENTS', ...files.map(f => '  ' + f.name + ' ' + f.url), ''] : []),
     'Submitted ' + when(meta.created_at) + ' from the website. Ref ' + reference(meta) + '.',
-  ].join('\n');
+  ].join('\n').replace(/\n{3,}/g, '\n\n');
 
   const subject = cfg.subject + ': ' + headline + (place ? ', ' + place : '') +
     (form === 'enquiry' && data.stage ? ' (' + data.stage + ')' : '');

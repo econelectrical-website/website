@@ -265,7 +265,7 @@ function buildEmail(form, data, meta) {
     '',
     ...(files.length ? ['ATTACHMENTS', ...files.map(f => '  ' + f.name + ' ' + f.url), ''] : []),
     'Submitted ' + when(meta.created_at) + ' from the website. Ref ' + reference(meta) + '.',
-  ].join('\n');
+  ].join('\n').replace(/\n{3,}/g, '\n\n');
 
   const subject = cfg.subject + ': ' + headline + (place ? ', ' + place : '') +
     (form === 'enquiry' && data.stage ? ' (' + data.stage + ')' : '');

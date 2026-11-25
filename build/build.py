@@ -1621,7 +1621,7 @@ def choice_field(f, fid):
             % (fid, data, e(f['label']), hint_html, ''.join(items), extra))
 
 
-def assess_field(ctx, f, prefix='a-'):
+def assess_field(ctx, f, prefix='a-', quiet=False):
     """One question on the assessment form, or on the enquiry form.
 
     Everything is a labelled control in the same shape so the form reads as one list
@@ -1633,15 +1633,20 @@ def assess_field(ctx, f, prefix='a-'):
     if f['type'] in ('chips', 'radio'):
         return choice_field(f, fid)
     req = ' required' if f.get('required') else ''
-    opt = ' <span class="opt">(optional)</span>' if f.get('optional') else ''
+    # A group that says once that everything in it is optional passes quiet, so the
+    # questions are not each labelled again. The phone keeps its tag either way:
+    # the page script swaps it for "(so we can call you)" when it becomes needed.
+    opt = (' <span class="opt">(optional)</span>'
+           if f.get('optional') and (not quiet or f['name'] == 'phone') else '')
     cls = 'field' + (' full' if f.get('full') else '') + (' lease-only' if f.get('lease') else '')
     help_html = '<p class="field-help">%s</p>' % e(f['help']) if f.get('help') else ''
 
     if f['type'] == 'select':
         opts = ''.join('<option value="%s">%s</option>' % (e(o), e(o)) for o in f['options'])
-        ctrl = ('<div class="select-wrap"><select id="%s" name="%s"%s>'
+        phone_if = (' data-phone-if="%s"' % e('|'.join(f['phone_if']))) if f.get('phone_if') else ''
+        ctrl = ('<div class="select-wrap"><select id="%s" name="%s"%s%s>'
                 '<option value="" disabled selected>Choose one</option>%s</select>%s</div>'
-                % (fid, f['name'], req, opts, icon('chevron-down')))
+                % (fid, f['name'], req, phone_if, opts, icon('chevron-down')))
     elif f['type'] == 'file':
         ctrl = ('<label class="file-drop" for="%s">%s'
                 '<span class="file-text"><b>Choose a file</b><small>or drag it here</small></span>'
@@ -1799,20 +1804,15 @@ def page_contact(ctx):
     {crumbs(ctx, [('Home', '/'), ('Contact Us', None)])}
     <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>Contact Us</p>
     <h1 class="words">{words('Get in Touch With Us')[0]}</h1>
-    <p class="lead fade-up" style="--d:.45s">Tell us about your site, project or maintenance requirements and our team will come back to you. Send us a message, give us a call or drop us an email.</p>
-    <div class="quick fade-up" style="--d:.6s">
-      <a href="tel:{SITE['phone_href']}"><span class="ico-box">{icon('phone')}</span><span><small>Call us</small><b>{SITE['phone']}</b></span></a>
-      <a href="mailto:{SITE['email']}"><span class="ico-box">{icon('mail')}</span><span><small>Email us</small><b>{SITE['email']}</b></span></a>
-      {ext(SITE['whatsapp_href'], '<span class="ico-box">%s</span><span><small>WhatsApp</small><b>%s</b></span>' % (icon('messages-square'), SITE['whatsapp']))}
-    </div>
+    <p class="lead fade-up" style="--d:.45s">Send us a message, give us a call or drop us an email, and a member of our team will come back to you within one working day.</p>
   </div>
 </section>
 
 <section class="section">
   <div class="container contact-grid">
     <div class="form-card" data-reveal>
-      <div style="display:grid;gap:14px">{eyebrow('Send Us a Message')}<h2 style="font-size:clamp(1.9rem,1.4rem + 1.6vw,2.8rem)">Drop Us a Line</h2></div>
-      <a class="enq-link" href="{enquire_href(ctx)}"><span class="ico-box">{icon('list-checks')}</span><span><b>Got a project in mind?</b><small>Our project enquiry takes two minutes, mostly ticks, and gets you a faster answer.</small></span>{icon('arrow-right')}</a>
+      <div style="display:grid;gap:14px">{eyebrow('General Enquiries')}<h2 style="font-size:clamp(1.9rem,1.4rem + 1.6vw,2.8rem)">Send Us a Message</h2></div>
+      <a class="enq-link" href="{enquire_href(ctx)}"><span class="ico-box">{icon('list-checks')}</span><span><b>Got a project in mind?</b><small>Use our project enquiry form for a faster answer.</small></span>{icon('arrow-right')}</a>
       {form_open}
         <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" type="text" autocomplete="name" placeholder="Your name" required></div>
         <div class="field"><label for="f-company">Company <span class="opt">(optional)</span></label><input id="f-company" name="company" type="text" autocomplete="organization" placeholder="Company name"></div>
@@ -1831,7 +1831,6 @@ def page_contact(ctx):
       <div class="info-row"><span class="ico-box">{icon('phone')}</span><div><small>Phone</small><a href="tel:{SITE['phone_href']}">{SITE['phone']}</a></div></div>
       <div class="info-row"><span class="ico-box">{icon('mail')}</span><div><small>Email</small><a href="mailto:{SITE['email']}">{SITE['email']}</a></div></div>
       <div class="info-row"><span class="ico-box">{icon('messages-square')}</span><div><small>WhatsApp</small>{ext(SITE['whatsapp_href'], SITE['whatsapp'])}</div></div>
-      <div class="info-row"><span class="ico-box">{icon('map-pin')}</span><div><small>Office</small><address>{e(SITE['legal'])}<br>{'<br>'.join(e(x) for x in SITE['address'])}</address></div></div>
       <div class="info-row"><span class="ico-box">{icon('clock')}</span><div><small>Opening hours</small><span>{e(SITE['hours_text'])}</span></div></div>
       <div class="socials">{ext(SITE['google_profile'], 'Google Reviews')}{ext(SITE['linkedin'], 'LinkedIn')}{ext(SITE['instagram'], 'Instagram')}{ext(SITE['facebook'], 'Facebook')}</div>
     </aside>
@@ -1861,8 +1860,9 @@ def page_contact(ctx):
 def page_enquiry(ctx):
     """The project enquiry form. Every "Enquire Now" on the site lands here.
 
-    Four short groups of mostly taps, with what happens next beside it, so the
-    person knows before they press send that a real person replies within a day.
+    Three short groups: what they need, their details and the job, then a few
+    optional drop downs. What happens next sits beside it, so the person knows
+    before they press send that a real person replies within a day.
     """
     to = FORM_ROUTING[ENQ.NAME]['to'][0]
     if ctx.mode == 'site':
@@ -1880,9 +1880,11 @@ def page_enquiry(ctx):
 
     groups = ''
     for n, (title, fields) in enumerate(ENQ.FIELDS, 1):
+        note = ENQ.GROUP_NOTES.get(title)
         groups += ('<fieldset class="assess-group enq-group"><legend><span class="enq-n">%d</span>%s</legend>'
-                   '<div class="assess-fields">%s</div></fieldset>'
-                   % (n, e(title), ''.join(assess_field(ctx, f, 'e-') for f in fields)))
+                   '%s<div class="assess-fields">%s</div></fieldset>'
+                   % (n, e(title), '<p class="assess-note">%s</p>' % e(note) if note else '',
+                      ''.join(assess_field(ctx, f, 'e-', quiet=bool(note)) for f in fields)))
 
     steps = ''.join('<li><span class="when">%s</span><p>%s</p></li>' % (e(w), e(p))
                     for w, p in ENQ.next_steps(AUTO_REPLY))
@@ -2354,8 +2356,7 @@ FORM_ROUTING = {
                           'summary_heading': 'Your enquiry',
                           'echo': [['interests', 'Interested in'], ['site_type', 'Type of site'],
                                    ['stage', 'Project'], ['timescale', 'Start'],
-                                   ['next_step', 'First step'], ['contact_method', 'Contact by'],
-                                   ['contact_time', 'Best time']],
+                                   ['next_step', 'First step'], ['contact_method', 'Contact by']],
                           'extra': ('Got drawings, a spec or photos of the site? Reply to this email with '
                                     'them attached.')}},
     'site-assessment': {'to': ['jonathan@econelectrical.co.uk'], 'cc': [],
@@ -2465,7 +2466,8 @@ def write_function():
 
     # The visit counter and the Friday review share the review code, which is
     # written into both rather than imported, so each function stands alone.
-    review = dict(REVIEW, site=site, titles=dict(PAGE_TITLES, **REVIEW_PAGE_NAMES))
+    review = dict(REVIEW, site=site, titles=dict(PAGE_TITLES, **REVIEW_PAGE_NAMES),
+                  form_pages={ENQ.NAME: ENQ.PATH, 'contact': CONTACT, ASSESS.NAME: ASSESS.PATH})
     lib = open(os.path.join(HERE, 'function', 'review-lib.mjs')).read()
     lib = lib.replace('__REVIEW__', json.dumps(review, indent=2, ensure_ascii=False))
     pages = sorted(PAGE_TITLES)

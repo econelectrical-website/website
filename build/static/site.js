@@ -275,8 +275,9 @@
     form.querySelectorAll('[data-phone-if]').forEach(function (group) {
       var needs = group.getAttribute('data-phone-if').split('|');
       function syncPhone() {
-        var picked = group.querySelector('input:checked');
-        var need = !!picked && needs.indexOf(picked.value) !== -1;
+        /* The question can be a drop down or a set of buttons. */
+        var picked = group.tagName === 'SELECT' ? group.value : (group.querySelector('input:checked') || {}).value;
+        var need = !!picked && needs.indexOf(picked) !== -1;
         if (!phone) return;
         phone.required = need;
         if (phoneHint) phoneHint.textContent = need ? '(so we can call you)' : '(optional)';

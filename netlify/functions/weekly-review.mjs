@@ -98,6 +98,11 @@ const REVIEW = {
     "/free-site-energy-assessment/thank-you/": "Assessment requested (thank you page)",
     "/enquire/": "Project enquiry form",
     "/enquiry-received/": "Enquiry sent (thank you page)"
+  },
+  "form_pages": {
+    "enquiry": "/enquire/",
+    "contact": "/contact-us-wakefield-electricians/",
+    "site-assessment": "/free-site-energy-assessment/"
   }
 };
 
@@ -360,11 +365,14 @@ function buildReviewEmail(s, opts = {}) {
     return [name, String(n), sub];
   }).filter(Boolean);
 
+  /* How far people get with each form: opened the page, started filling it in,
+     sent it. Plenty opening it and few starting is the sign a form asks too much. */
   const forms = Object.keys(FORM_NAMES).map(f => {
+    const opened = (cur.views || {})[(REVIEW.form_pages || {})[f]] || 0;
     const started = ((cur.forms || {}).start || {})[f] || 0;
     const sent = ((cur.forms || {}).send || {})[f] || 0;
-    if (!started && !sent) return null;
-    return [FORM_NAMES[f], sent + ' sent', started + ' started filling it in' + (started && sent <= started ? ', ' + pct(sent, started) + ' sent it' : '')];
+    if (!opened && !started && !sent) return null;
+    return [FORM_NAMES[f], sent + ' sent', opened + ' opened the page · ' + started + ' started filling it in · ' + sent + ' sent it'];
   }).filter(Boolean);
 
   const dev = cur.devices || {};
