@@ -20,6 +20,9 @@ from illustration import home_energy_svg
 import assessment as ASSESS
 import enquiry as ENQ
 from landing_pages import LANDING, LANDING_ORDER, OFFER_LINKS, PROJECT_SERVICE, RESIDENTIAL
+import wakefield as WK
+# The Wakefield pages' Enquire buttons pre tick the service they are about.
+ENQ.PAGE_INTEREST.update({s: d['interest'] for s, d in WK.PAGES.items()})
 from site_content import (ABOUT_PARAS, AREAS, CATEGORIES, CTA_DEFAULT, FEATURED_PROJECTS, HOME, POSTS, PRIVACY,
                           PROJECT_ORDER, PROJECTS, RETIRED_POSTS, SERVICE_ORDER, SERVICES, SITE, TEAM)
 
@@ -69,7 +72,13 @@ OFFER_ICON = {
     'Emergency Lighting': 'lightbulb',
 }
 PROCESS_ICON = {'Consult': 'users', 'Design': 'circuit-board', 'Install': 'hard-hat', 'Support': 'shield-check',
-                'Inspect': 'scan-search', 'Report': 'file-text'}
+                'Inspect': 'scan-search', 'Report': 'file-text',
+                # Step names used on the Wakefield pages
+                'Enquire': 'phone', 'Visit': 'map-pin', 'Quote': 'file-text', 'Deliver': 'badge-check',
+                'Survey': 'scan-search', 'Plan': 'circuit-board', 'Certify': 'badge-check', 'Book': 'calendar-check',
+                'Put Right': 'wrench', 'Assess': 'scan-search', 'Monitor': 'activity', 'Handover': 'badge-check',
+                'Review': 'clipboard-check', 'Maintain': 'wrench', 'Respond': 'timer', 'Consultation': 'users',
+                'Installation': 'hard-hat', 'Aftercare': 'shield-check'}
 HERO_SHORT = {'Planned Preventative Maintenance (PPM)': 'PPM'}
 CTA_IMAGE = {'home': 'renewables-hero', 'electrical-installation': 'home-about-site', 'renewables': 'renewables-ev',
              'compliance': 'installation-ppm', 'about': 'renewables-hero', 'projects': 'home-about-site',
@@ -78,6 +87,7 @@ CTA_IMAGE = {'home': 'renewables-hero', 'electrical-installation': 'home-about-s
              'eicr-fixed-wire-testing': 'compliance-hero', 'commercial-led-lighting': 'home-cta-warehouse',
              'home-solar-battery-installation': 'home-energy-art',
              'assessment': 'renewables-solar'}
+CTA_IMAGE.update({s: d['cta_img'] for s, d in WK.PAGES.items()})
 TRUST = [
     ('badge-check', 'NICEIC Approved', 'Approved contractor, with MCS and SafeContractor accreditation.'),
     ('factory', 'Commercial & Industrial Focus', 'Electrical solutions tailored to commercial, industrial and public sector environments.'),
@@ -490,6 +500,18 @@ def header(ctx):
 </header>'''
 
 
+def area_line(ctx):
+    """The line at the foot of every page, "Electricians in Wakefield and surrounding
+    areas.", with its first words linking to the Wakefield pages. It is the only link
+    to them from the main site, so they stay out of the way of the national pages
+    while Google can still find them."""
+    text = SITE['area_line']
+    lead = 'Electricians in Wakefield'
+    if not text.startswith(lead):
+        return e(text)
+    return '<a href="%s">%s</a>%s' % (ctx.u('/%s/' % WK.HUB), e(lead), e(text[len(lead):]))
+
+
 def footer(ctx):
     svc = ''.join('<li><a href="%s">%s</a></li>' % (ctx.u('/%s/' % k), e(SERVICES[k]['name'])) for k in SERVICE_ORDER)
     svc += ''.join('<li class="sub"><a href="%s">%s</a></li>' % (ctx.u('/%s/' % k), e(LANDING[k]['name'])) for k in LANDING_ORDER)
@@ -530,7 +552,7 @@ def footer(ctx):
   <div class="container footer-bottom">
     <span>&copy; {YEAR} {e(SITE['legal'])}. All rights reserved.</span>
     <span class="legal"><a href="{ctx.u('/privacy-notice/')}" data-privacy-link>Privacy Notice</a><button type="button" data-cookie-settings>Cookie Settings</button></span>
-    <span>{e(SITE['area_line'])}</span>
+    <span>{area_line(ctx)}</span>
   </div>
   <img class="footer-mark" src="{ctx.a('assets/img/brand/icon-512.png')}" width="512" height="512" alt="" loading="lazy">
 </footer>
@@ -1244,6 +1266,168 @@ def page_landing(ctx, slug):
         {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in d['faqs']]}
     svc_ld = {'@context': 'https://schema.org', '@type': 'Service', 'name': d['h1'], 'serviceType': d['name'],
               'description': d['description'], 'url': url, 'areaServed': ['Yorkshire', 'United Kingdom'],
+              'provider': {'@type': 'Electrician', '@id': SITE['domain'] + '/#business', 'name': SITE['legal'], 'url': SITE['domain'] + '/'}}
+    meta = {'title': d['title'], 'description': d['description'], 'path': '/%s/' % slug, 'image': abs_img(d['hero']),
+            'jsonld': [svc_ld, faq_ld]}
+    return meta, body
+
+
+def wakefield_links(ctx, current):
+    """Every other Wakefield page, so a visitor who lands on one can find the rest and
+    Google can crawl them all from any one of them."""
+    cards = ''.join(f"""
+      <a class="wk-link" href="{ctx.u('/%s/' % s)}"><span class="ico-box">{icon(WK.PAGES[s]['icon'])}</span><span><b>{e(WK.PAGES[s]['short'])}</b><small>{e(WK.PAGES[s]['blurb'])}</small></span><span class="go">{arrow()}</span></a>"""
+                    for s in WK.ORDER if s != current)
+    return f"""
+<section class="section">
+  <div class="container">
+    <div class="section-head row" data-reveal>
+      <div>{eyebrow('For Wakefield Businesses')}<h2>More of What We Do in Wakefield</h2></div>
+    </div>
+    <div class="wk-links" data-stagger>{cards}
+    </div>
+  </div>
+</section>"""
+
+
+def page_wakefield(ctx, slug):
+    """A Wakefield landing page. Built like the specialist landing pages, with local
+    proof in place of the UK coverage panel: the office, the district, the Google
+    rating and the jobs closest to home."""
+    d = WK.PAGES[slug]
+    trail = [('Home', '/'), ('Electricians in Wakefield', None)] if slug == WK.HUB else \
+            [('Home', '/'), ('Electricians in Wakefield', '/%s/' % WK.HUB), (d['short'], None)]
+    chips = ''.join('<span class="chip">%s%s</span>' % (icon('circle-check'), e(c)) for c in d['chips'])
+    points = ''.join(f"""
+        <div class="feature"><span class="ico-box">{icon(ic)}</span><h3>{e(h)}</h3><p>{e(t)}</p></div>""" for ic, h, t in d['points'])
+    faqs = ''.join(f"""
+        <details><summary>{e(q)}<span class="pm">{icon('plus')}</span></summary><p class="ans">{e(a)}</p></details>""" for q, a in d['faqs'])
+    places = ''.join('<span class="chip">%s%s</span>' % (icon('map-pin'), e(x)) for x in WK.PLACES)
+    office_map = ('<img src="%s" width="%d" height="%d" alt="Map of Denby Dale Road, Wakefield, showing the Econ Electrical office" loading="lazy">'
+                  '<div class="map-pin" style="--x:%s%%;--y:%s%%"><span class="dot"></span><span class="lbl">Econ Electrical</span></div>'
+                  '<span class="map-credit">&copy; OpenStreetMap contributors</span>') % (
+        ctx.a('assets/img/contact/econ-office-map.webp'), MAP['w'], MAP['h'], MAP['x'], MAP['y'])
+    rating = ('<p class="rating-line">%s<span>Rated <strong>%s out of 5</strong> by our customers on Google.</span> %s</p>'
+              % (icon('badge-check'), WK.GOOGLE_RATING,
+                 ext(SITE['google_profile'], 'Read our reviews %s' % arrow(), 'link-arrow')))
+
+    quote = ''
+    if d.get('quote'):
+        p = PROJECTS[d['quote']]
+        quote = f"""
+    <figure class="t-card wk-quote" data-reveal>
+      {icon('quote', 'i q')}
+      <blockquote><p>{e(p['quote'])}</p></blockquote>
+      <figcaption class="who"><span class="avatar" aria-hidden="true">{initials(p['quote_name'])}</span><span><strong>{e(p['quote_name'])}</strong><span>{e(p['quote_role'])}</span></span></figcaption>
+    </figure>"""
+    proof = ''
+    if d['proof'] or d.get('results'):
+        n = len(d['proof'])
+        cards = ''.join(project_card(ctx, s, '(max-width: 760px) 90vw, %dvw' % (100 // max(n, 1))) for s in d['proof'])
+        proof = f"""
+<section class="section">
+  <div class="container">
+    <div class="section-head row" data-reveal>
+      <div>{eyebrow('Proven Results')}<h2>{e(d['proof_h2'] or 'Recent Projects')}</h2></div>
+      <a class="link-arrow" href="{ctx.u('/projects/')}">View All Projects <span class="circle">{arrow()}</span></a>
+    </div>
+    {stat_block(d.get('results'), style=' style="margin-bottom:24px"')}
+    {'<div class="proof-cards n%d" data-stagger>%s</div>' % (n, cards) if n else ''}{quote}
+  </div>
+</section>"""
+    elif quote:
+        proof = '<section class="section"><div class="container">%s</div></section>' % quote
+
+    if d.get('cta_assess'):
+        cta = f'''
+<section class="section tight">
+  <div class="container">
+    <div class="cta-band" data-reveal>
+      {img(ctx, d['cta_img'], '', '100vw')}
+      <div class="inner">
+        {eyebrow('Free Site Energy Assessment')}
+        <h2>{e(d['cta_h'])}</h2>
+        <p>{e(d['cta_p'])}</p>
+        <div class="btn-row">{btn(ctx.u(ASSESS.PATH), 'Book Your Free Assessment')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
+      </div>
+    </div>
+  </div>
+</section>'''
+    else:
+        cta = cta_band(ctx, slug, 'Get in Touch', d['cta_h'], d['cta_p'], 'Enquire Now')
+
+    body = f"""
+<section class="page-hero{' dim' if d.get('hero_dim') else ''}">
+  {img(ctx, d['hero'], d['hero_alt'], '100vw', eager=True)}
+  <div class="grain"></div>
+  <div class="container page-hero-inner">
+    {crumbs(ctx, trail)}
+    <p class="kicker fade-up" style="--d:.05s"><span class="pulse"></span>{e(d['kicker'])}</p>
+    <h1 class="words">{words(d['h1'])[0]}</h1>
+    <p class="lead fade-up" style="--d:.45s">{e(d['lede'])}</p>
+    <div class="btn-row fade-up" style="--d:.6s">{btn(enquire_href(ctx, slug), 'Enquire Now')}<a class="btn btn-glass plain" href="tel:{SITE['phone_href']}">{icon('phone')}&nbsp;{SITE['phone']}</a></div>
+    <div class="hero-chips fade-up" style="--d:.75s">{chips}</div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container intro-grid">
+    <div class="intro-copy" data-reveal>
+      {eyebrow('Based in Wakefield')}
+      <h2>{e(d['intro_h2'])}</h2>
+      <div class="copy">{''.join('<p>%s</p>' % e(p) for p in d['intro'])}</div>
+      {logo_row(ctx, ('logo-niceic', 'logo-mcs', 'logo-safecontractor'))}
+      {rating}
+    </div>
+    <div class="feature-grid" data-stagger>{points}
+    </div>
+  </div>
+</section>
+{proof}
+<section class="section-alt" aria-label="{e(d['includes_h2'])}">
+  <div class="container">
+    <article class="offer">
+      <div class="offer-media" data-reveal>
+        {img(ctx, d['includes_img'], d['includes_alt'], '(max-width: 960px) 90vw, 50vw')}
+        <span class="media-tag">{icon('badge-check')}NICEIC Approved</span>
+      </div>
+      <div class="offer-copy" data-reveal>
+        <span class="ico-box">{icon('list-checks')}</span>
+        <h2>{e(d['includes_h2'])}</h2>
+        <div class="copy"><p>{e(d['includes_intro'])}</p></div>
+        <ul class="ticks">{''.join('<li>%s%s</li>' % (icon('circle-check'), e(x)) for x in d['includes'])}</ul>
+        <a class="link-arrow" href="{enquire_href(ctx, slug)}">Tell Us What You Need <span class="circle">{arrow()}</span></a>
+      </div>
+    </article>
+  </div>
+</section>
+{assess_banner(ctx) if d.get('assess') else ''}
+{process_section(ctx, d['process'])}
+<section class="section section-alt">
+  <div class="container duo">
+    <div class="panel" data-reveal>
+      {eyebrow('Frequently Asked Questions')}
+      <h2 style="font-size:clamp(1.8rem,1.3rem + 1.6vw,2.6rem)">Got Questions?</h2>
+      <div class="faq">{faqs}</div>
+      <a class="link-arrow" href="{enquire_href(ctx, slug)}">Ask Our Team <span class="circle">{arrow()}</span></a>
+    </div>
+    <div class="panel" data-reveal>
+      {eyebrow('Local to You')}
+      <h2 style="font-size:clamp(1.8rem,1.3rem + 1.6vw,2.6rem)">{e(WK.DISTRICT['h2'])}</h2>
+      <p>{e(WK.DISTRICT['p'])}</p>
+      <div class="places">{places}</div>
+      <div class="coverage-map wk-map">{office_map}</div>
+    </div>
+  </div>
+</section>
+{wakefield_links(ctx, slug)}
+{cta}"""
+    url = SITE['domain'] + '/%s/' % slug
+    faq_ld = {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': [
+        {'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in d['faqs']]}
+    svc_ld = {'@context': 'https://schema.org', '@type': 'Service', 'name': d['h1'], 'serviceType': d['name'],
+              'description': d['description'], 'url': url,
+              'areaServed': [{'@type': 'City', 'name': 'Wakefield'}, {'@type': 'AdministrativeArea', 'name': 'West Yorkshire'}],
               'provider': {'@type': 'Electrician', '@id': SITE['domain'] + '/#business', 'name': SITE['legal'], 'url': SITE['domain'] + '/'}}
     meta = {'title': d['title'], 'description': d['description'], 'path': '/%s/' % slug, 'image': abs_img(d['hero']),
             'jsonld': [svc_ld, faq_ld]}
@@ -2271,6 +2455,7 @@ def all_pages():
     pages += [('/%s/' % s, (lambda s: lambda ctx: page_service(ctx, s))(s)) for s in SERVICE_ORDER]
     pages += [('/%s/' % s, (lambda s: lambda ctx: page_landing(ctx, s))(s)) for s in LANDING_ORDER]
     pages += [('/%s/' % RESIDENTIAL['slug'], page_residential)]
+    pages += [('/%s/' % s, (lambda s: lambda ctx: page_wakefield(ctx, s))(s)) for s in WK.ORDER]
     pages += [('/%s/' % s, (lambda s: lambda ctx: page_project(ctx, s))(s)) for s in PROJECT_ORDER]
     pages += [('/%s/' % p['slug'], (lambda p: lambda ctx: page_post(ctx, p))(p)) for p in POSTS]
     pages += [('/privacy-notice/', page_privacy)]
