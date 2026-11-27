@@ -445,15 +445,18 @@
   wireFilters(document.querySelector('[data-blog]'), '.post-card', ['article', 'articles']);
   wireFilters(document.querySelector('[data-filterable]'), '.proj-card', ['project', 'projects'], 5);
 
-  /* Cookie choice. Google Analytics and the Google map only load once a visitor accepts. */
-  var CONSENT_KEY = 'econ:consent';
+  /* Cookie choice. Google Analytics, the Google Ads tag and the Google map only load once a
+     visitor accepts. The key carries a version: the wording changed on 27 November 2026 to
+     cover advert measurement, so a choice made under the old wording is asked again. */
+  var CONSENT_KEY = 'econ:consent:2';
+  try { window.localStorage.removeItem('econ:consent'); } catch (err) {}
   var consentMemory = null;
   function readConsent() { try { return window.localStorage.getItem(CONSENT_KEY) || consentMemory; } catch (err) { return consentMemory; } }
   function saveConsent(v) { consentMemory = v; try { window.localStorage.setItem(CONSENT_KEY, v); } catch (err) {} }
   function clearAnalyticsCookies() {
     document.cookie.split(';').forEach(function (c) {
       var name = c.split('=')[0].trim();
-      if (name.indexOf('_ga') !== 0) return;
+      if (name.indexOf('_ga') !== 0 && name.indexOf('_gcl') !== 0) return;
       var host = location.hostname.replace(/^www\./, '');
       ['', '; domain=' + host, '; domain=.' + host].forEach(function (d) { document.cookie = name + '=; Max-Age=0; path=/' + d; });
     });
@@ -485,7 +488,7 @@
       consentBar.className = 'consent';
       consentBar.setAttribute('role', 'region');
       consentBar.setAttribute('aria-label', 'Cookie choice');
-      consentBar.innerHTML = '<p><strong>Cookies</strong>We use cookies for website analytics and to show Google Maps. You can accept or decline them.' +
+      consentBar.innerHTML = '<p><strong>Cookies</strong>We use cookies for website analytics, to measure our Google adverts and to show Google Maps. You can accept or decline them.' +
         (privacy ? ' <a href="' + privacy.getAttribute('href') + '">Privacy notice</a>' : '') + '</p>' +
         '<div class="consent-actions"><button type="button" class="btn btn-primary plain" data-consent="granted">Accept</button>' +
         '<button type="button" class="btn btn-glass plain" data-consent="denied">Decline</button></div>';
@@ -558,8 +561,10 @@
      an enquiry button, an accreditation logo, a link to another site, or starts
      or sends a form. Nothing is stored on the device and nothing that identifies
      the visitor is sent. Anyone who chose Decline on the cookie bar, or whose
-     browser asks sites not to track it, is not counted. When Google Analytics has
-     been accepted, the same clicks are passed to it as well. */
+     browser asks sites not to track it, is not counted. When cookies have been
+     accepted, the same clicks are passed to Google Analytics as well, and a sent
+     form or a tap on the phone number is reported to Google Ads, which counts it
+     only if the visitor arrived from one of our adverts. */
   (function () {
     var meta = document.querySelector('meta[name="econ-count"]');
     if (!meta) return;
@@ -574,6 +579,11 @@
     }
     function ga(name, params) {
       if (window.__econGA && typeof window.gtag === 'function') window.gtag('event', name, params);
+    }
+    function ads(what) {
+      var a = window.econAds;
+      if (!a || !a.id || !a[what] || !window.__econGA || typeof window.gtag !== 'function') return;
+      window.gtag('event', 'conversion', { send_to: a.id + '/' + a[what] });
     }
     var path = location.pathname;
 
@@ -595,6 +605,11 @@
     } catch (err) {}
     note({ e: 'view', p: path, r: from, s: tag, l: arrived ? 1 : 0 });
 
+    /* A thank you page reached from one of our own pages means a form was sent.
+       Opening the address directly does not count. */
+    var THANKS = { '/thank-you/': 1, '/enquiry-received/': 1, '/free-site-energy-assessment/thank-you/': 1 };
+    if (THANKS[path] && document.referrer && !arrived) ads('lead');
+
     var PAGES = { '/enquire/': 'enquire', '/free-site-energy-assessment/': 'assessment', '/contact-us-wakefield-electricians/': 'contact' };
     document.addEventListener('click', function (ev) {
       var a = ev.target && ev.target.closest ? ev.target.closest('a[href]') : null;
@@ -615,6 +630,7 @@
       }
       note({ e: 'click', k: kind, p: path, x: target });
       ga('click_' + kind, { link_url: a.href, page_path: path });
+      if (kind === 'call') ads('call');
     }, true);
 
     document.querySelectorAll('form[name]').forEach(function (form) {

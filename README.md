@@ -101,6 +101,20 @@ never the copies.
   Pressing Run now on it in Netlify sends a test copy of the last seven days. If the
   schedule ever fails to fire, the visit counter sends the review two hours late.
 
+## Google Analytics and Google Ads
+
+Neither loads until a visitor presses Accept on the cookie bar. The tag in the page head
+(`document()` in `build.py`) then loads Google Analytics and the Google Ads tag together and
+tells Google that measuring is allowed and personalised advertising is not.
+
+`site.js` reports two things to Google Ads so the adverts can be judged on enquiries, not
+clicks: a thank you page reached from one of our own pages (a form was sent) and a tap on
+the phone number. Google only counts either when the visitor arrived from an advert. The
+tag ID and the two conversion labels live in `SITE` in `site_content.py`.
+
+The cookie choice is stored under `econ:consent:2`. Change the number whenever the cookie
+wording changes what people are agreeing to, so everyone is asked again.
+
 ## Short addresses
 
 `build.py` writes `_redirects`, which includes short addresses used in print. `/solar`

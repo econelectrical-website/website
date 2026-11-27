@@ -628,12 +628,18 @@ def document(ctx, meta, body, preview_main=False):
         # Where the page script sends its anonymous visit and click notes (see the
         # visit counter in function/visit-counter.mjs). The preview has no counter.
         head.append('<meta name="econ-count" content="%s">' % COUNTER_PATH)
-        # Google Analytics only loads once the visitor has accepted cookies (see the cookie bar in site.js)
+        # Google Analytics and the Google Ads tag only load once the visitor has accepted cookies
+        # (see the cookie bar in site.js). Accepting is what the consent line reports to Google:
+        # measuring is allowed, personalised advertising is not, because we do not use it.
+        # window.econAds holds the conversion labels site.js sends for a form or a phone tap.
         head.append(("<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}"
+                     "window.econAds={id:'%s',lead:'%s',call:'%s'};"
                      "window.econAnalytics=function(){if(window.__econGA)return;window.__econGA=1;"
+                     "gtag('consent','default',{analytics_storage:'granted',ad_storage:'granted',ad_user_data:'granted',ad_personalization:'denied'});"
                      "var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id=%s';"
-                     "document.head.appendChild(s);gtag('js',new Date());gtag('config','%s');};"
-                     "try{if(localStorage.getItem('econ:consent')==='granted')window.econAnalytics();}catch(e){}</script>") % (SITE['ga4'], SITE['ga4']))
+                     "document.head.appendChild(s);gtag('js',new Date());gtag('config','%s');gtag('config','%s');};"
+                     "try{if(localStorage.getItem('econ:consent:2')==='granted')window.econAnalytics();}catch(e){}</script>")
+                    % (SITE['ads_tag'], SITE['ads_lead'], SITE['ads_call'], SITE['ga4'], SITE['ga4'], SITE['ads_tag']))
     page = '<span class="top-marker" aria-hidden="true"></span>' + header(ctx) + '\n<main id="main">\n' + body + '\n</main>\n' + footer(ctx) + \
         '\n<script src="%s" defer></script>\n' % ctx.a('assets/site.js')
     if preview_main:

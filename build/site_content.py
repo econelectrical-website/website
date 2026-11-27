@@ -25,6 +25,11 @@ SITE = {
     'tagline': 'Experienced and Efficient Electrical Contractors.',
     'area_line': 'Electricians in Wakefield and surrounding areas.',
     'ga4': 'G-Q5502B5VSD',
+    # Google Ads tag, and the two conversion actions it reports to (Goals, then Conversions,
+    # in Google Ads). It loads with the same cookie choice as Analytics, never before.
+    'ads_tag': 'AW-11180629970',
+    'ads_lead': 'Y3W7CPXk4rwdENK_q9Mp',   # 'Submit lead form': a thank you page opened after a form
+    'ads_call': '5U-TCKCG0sAdENK_q9Mp',   # 'Phone number tap': a tap on the phone number
     'google_verification': 'eCkdbuOgMRzyMCEWXkRBby_6Ij_mP69oL9QgwZS8vrQ',
 }
 
@@ -786,7 +791,7 @@ We provide lighting surveys, design and installation for schools, academies and 
 
 # Privacy notice. A standard notice for a small business website; worth a quick check that it matches how the business works.
 PRIVACY = {
-    'updated': '2026-11-25',
+    'updated': '2026-11-27',
     'lede': 'How Econ Electrical Ltd collects and uses personal information through this website and when you contact us.',
     'body': '''
 ## Who We Are
@@ -797,7 +802,8 @@ Econ Electrical Ltd is responsible for the personal information described in thi
 
 - **Enquiries:** when you use one of our forms, we collect your name, company, email address, phone number, the details of your project and your message.
 - **Emails, calls and messages:** when you contact us directly, including by WhatsApp, we keep the details you give us.
-- **Website analytics:** if you accept analytics cookies, Google Analytics collects information about how you use the site, such as the pages you visit, how long you stay and the type of device you use.
+- **Website analytics:** if you accept cookies, Google Analytics collects information about how you use the site, such as the pages you visit, how long you stay and the type of device you use.
+- **Advert measurement:** if you accept cookies and you came to the site from one of our Google adverts, Google records when an enquiry form is sent or our phone number is tapped, so we can see which adverts lead to enquiries. We do not send Google your name, your contact details or anything you type into a form.
 - **Visit counts:** we also keep an anonymous count of the pages people visit, the website or search they arrived from, and clicks on things like our phone number and enquiry buttons, so we can see which parts of the site are useful. It uses no cookies and does not record your IP address or anything else that identifies you. If you choose Decline in Cookie Settings, or your browser asks websites not to track you, your visits are not counted.
 
 ## How We Use It
@@ -813,7 +819,7 @@ We use trusted providers to run our website and communications:
 - **Netlify**, which hosts this website, processes our forms and keeps our anonymous visit counts
 - **Resend**, which sends the confirmation email you receive after using one of our forms
 - **Microsoft**, which provides our email
-- **Google**, which provides website analytics if you accept analytics cookies, and the map on our contact page
+- **Google**, which provides website analytics and advert measurement if you accept cookies, and the map on our contact page
 - **WhatsApp**, if you choose to message us that way
 
 Some of these providers may process information outside the UK. Where they do, the transfer is protected by the safeguards that UK data protection law requires.
@@ -824,7 +830,7 @@ We keep enquiry details for as long as we need them to deal with your enquiry. I
 
 ## Cookies
 
-Cookies are small files stored on your device. Our website only uses analytics cookies if you choose to accept them, using the message shown on your first visit. The map on our contact page is provided by Google and only loads if you accept cookies or choose to show it, because Google may set its own cookies. You can change your choice at any time using the Cookie Settings link at the bottom of every page.
+Cookies are small files stored on your device. Our website only uses analytics and advert measurement cookies if you choose to accept them, using the message shown on your first visit. The map on our contact page is provided by Google and only loads if you accept cookies or choose to show it, because Google may set its own cookies. You can change your choice at any time using the Cookie Settings link at the bottom of every page.
 
 ## Your Rights
 

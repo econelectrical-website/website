@@ -44,7 +44,7 @@ async def main():
         # 1. screenshots
         for name, path, w in SHOTS:
             ctx = await b.new_context(viewport={'width': w, 'height': 900}, device_scale_factor=1, reduced_motion='reduce')
-            await ctx.add_init_script("try{localStorage.setItem('econ:consent','denied')}catch(e){}")
+            await ctx.add_init_script("try{localStorage.setItem('econ:consent:2','denied')}catch(e){}")
             page = await ctx.new_page()
             errs = []
             page.on('pageerror', lambda err: errs.append(str(err)))
@@ -58,7 +58,7 @@ async def main():
         sm = open('dist/site/sitemap.xml').read()
         paths = [re.sub(r'^https://econelectrical\.co\.uk', '', u) for u in re.findall(r'<loc>([^<]+)</loc>', sm)]
         ctx = await b.new_context(viewport={'width': 390, 'height': 844}, reduced_motion='reduce')
-        await ctx.add_init_script("try{localStorage.setItem('econ:consent','denied')}catch(e){}")
+        await ctx.add_init_script("try{localStorage.setItem('econ:consent:2','denied')}catch(e){}")
         page = await ctx.new_page()
         over = []
         for path in paths:
@@ -71,7 +71,7 @@ async def main():
 
         # 3. normal navigation: card clicked half way down the projects page opens the project at the top
         ctx = await b.new_context(viewport={'width': 1440, 'height': 900})
-        await ctx.add_init_script("try{localStorage.setItem('econ:consent','denied')}catch(e){}")
+        await ctx.add_init_script("try{localStorage.setItem('econ:consent:2','denied')}catch(e){}")
         page = await ctx.new_page()
         await page.goto(BASE + '/projects/', wait_until='networkidle')
         await page.evaluate('window.scrollTo(0, 1400)')
@@ -96,7 +96,7 @@ async def main():
 
         # 4. a viewer that keeps the old scroll position when a new page loads
         ctx = await b.new_context(viewport={'width': 1440, 'height': 900})
-        await ctx.add_init_script("try{localStorage.setItem('econ:consent','denied')}catch(e){}")
+        await ctx.add_init_script("try{localStorage.setItem('econ:consent:2','denied')}catch(e){}")
         await ctx.add_init_script('''document.addEventListener('readystatechange', function () {
             if (document.readyState === 'interactive' && location.pathname !== '/projects/') window.scrollTo(0, 2200); });''')
         page = await ctx.new_page()
@@ -109,7 +109,7 @@ async def main():
 
         # 5. the site shown inside a taller page (the outer page scrolls, not the site)
         ctx = await b.new_context(viewport={'width': 1280, 'height': 860})
-        await ctx.add_init_script("try{localStorage.setItem('econ:consent','denied')}catch(e){}")
+        await ctx.add_init_script("try{localStorage.setItem('econ:consent:2','denied')}catch(e){}")
         page = await ctx.new_page()
         await page.route(BASE + '/__harness.html', lambda r: r.fulfill(status=200, content_type='text/html', body=HARNESS))
         await page.goto(BASE + '/__harness.html', wait_until='networkidle')
@@ -126,7 +126,7 @@ async def main():
 
         # 6. same page anchor glides and keeps the hash; blog filters
         ctx = await b.new_context(viewport={'width': 1440, 'height': 900})
-        await ctx.add_init_script("try{localStorage.setItem('econ:consent','denied')}catch(e){}")
+        await ctx.add_init_script("try{localStorage.setItem('econ:consent:2','denied')}catch(e){}")
         page = await ctx.new_page()
         await page.goto(BASE + '/', wait_until='networkidle')
         await page.click('.hero .btn-glass')
@@ -156,7 +156,7 @@ async def main():
 
         # 7. hero and menu on a phone
         ctx = await b.new_context(viewport={'width': 390, 'height': 844}, device_scale_factor=2)
-        await ctx.add_init_script("try{localStorage.setItem('econ:consent','denied')}catch(e){}")
+        await ctx.add_init_script("try{localStorage.setItem('econ:consent:2','denied')}catch(e){}")
         page = await ctx.new_page()
         await page.goto(BASE + '/', wait_until='networkidle')
         await page.wait_for_timeout(1600)
